@@ -44,7 +44,7 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.5.0</version> <!-- Specify version for PostgreSQL -->
+      <version>42.5.5</version> <!-- Specify version for PostgreSQL -->
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
