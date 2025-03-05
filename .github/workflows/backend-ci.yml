@@ -1,0 +1,6 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - main  # Run the workflow on pushes to the main branch
