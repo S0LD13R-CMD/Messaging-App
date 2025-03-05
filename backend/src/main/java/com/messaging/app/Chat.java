@@ -9,4 +9,5 @@ public class Chat {
     public static void main(String[] args) {
         SpringApplication.run(Chat.class, args);
     }
+    //add a new method to the Chat class
 }
