@@ -1,36 +1,83 @@
 package com.qmul.messaging.app.controller;
 
+import com.qmul.messaging.app.model.ForumMessage;
 import com.qmul.messaging.app.model.GlobalMessage;
+import com.qmul.messaging.app.model.PrivateMessage;
+import com.qmul.messaging.app.repository.ForumMessageRepository;
 import com.qmul.messaging.app.repository.GlobalMessageRepository;
+import com.qmul.messaging.app.repository.PrivateMessageRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// FOR ABDUL - This is the controller class that handles all the routes for messages
+// The routes are defined using the @GetMapping and @PostMapping annotations
+// These APIS should ONLY, and ONLY be ACCESSED WITHIN A CHAT.
+
 @RestController
 @RequestMapping("/messages")  // All routes start with /messages
 public class MessageController {
 
-    private final GlobalMessageRepository messageRepository;
+    private final GlobalMessageRepository globalMessageRepository;
+    private final ForumMessageRepository forumMessageRepository;
+    private final PrivateMessageRepository privateMessageRepository;
 
-    public MessageController(GlobalMessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
+    public MessageController(GlobalMessageRepository globalMessageRepository, ForumMessageRepository forumMessageRepository, PrivateMessageRepository privateMessageRepository) {
+        this.globalMessageRepository = globalMessageRepository;
+        this.forumMessageRepository = forumMessageRepository;
+        this.privateMessageRepository = privateMessageRepository;
     }
 
+    /////////////////////////////// GLOBAL MESSAGES /////////////////////////////////
     // GET /messages -> Fetch all messages
-    @GetMapping
+    @GetMapping("/global")
     public List<GlobalMessage> getAllMessages() {
-        return messageRepository.findAll();
+        return globalMessageRepository.findAll();
     }
 
     // POST /messages -> Save a new message
-    @PostMapping
+    @PostMapping("/global")
     public ResponseEntity<GlobalMessage> createMessage(@RequestBody GlobalMessage message) {
         try {
-            GlobalMessage savedMessage = messageRepository.save(message);
+            GlobalMessage savedMessage = globalMessageRepository.save(message);
             return ResponseEntity.ok(savedMessage); // Returns 200 OK with the saved message
         } catch (Exception e) {
             return ResponseEntity.status(500).build(); // Returns 500 Internal Server Error if something fails
+        }
+    }
+
+    /////////////////////////////// FORUM MESSAGES API /////////////////////////////////
+    // change this to find all by ids
+    @GetMapping("/forum")
+    public List<ForumMessage> getAllForumMessages() {
+        return forumMessageRepository.findAll();
+    }
+
+    @PostMapping("/forum")
+    public ResponseEntity<ForumMessage> createForumMessage(@RequestBody ForumMessage message) {
+        try {
+            ForumMessage savedMessage = forumMessageRepository.save(message);
+            return ResponseEntity.ok(savedMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    /////////////////////////////// PRIVATE MESSAGES API /////////////////////////////////
+    // Change this to find all by ids
+    @GetMapping("/private")
+    public List<PrivateMessage> getAllPrivateMessages() {
+        return privateMessageRepository.findAll();
+    }
+
+    @PostMapping("/private")
+    public ResponseEntity<PrivateMessage> createForumMessage(@RequestBody PrivateMessage message) {
+        try {
+            PrivateMessage savedMessage = privateMessageRepository.save(message);
+            return ResponseEntity.ok(savedMessage);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 
