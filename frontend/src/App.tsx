@@ -1,34 +1,93 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
 import './App.css'
+import './styles/buttonAnimations.css'
+import LoginPage from './pages/LoginPage'
+import GlobalChatPage from './pages/GlobalChatPage'
+import PrivateChatPage from './pages/PrivateChatPage'
+import { chatStyles } from './styles/chatStyles'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Authentication and user states
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  
+  // For demo purposes only - in a real app, you would use a proper auth system
+  const login = (user: string) => {
+    setUsername(user);
+    setIsAuthenticated(true);
+  };
+  
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUsername('');
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Router>
+      {isAuthenticated && (
+        <nav className="text-white p-4 pb-8 mb-8">
+          <div className="max-w-screen-2xl mx-auto flex justify-between">
+            <div className="flex">
+              <Link to="/global" className="rounded text-white font-medium">
+                <button
+                style={{...chatStyles.button}}
+                className="btn-slide hover:bg-white hover:text-black"
+                >
+                  Global Chat
+                </button>
+              </Link>
+              <Link to="/private" className="rounded text-white font-medium">
+                <button
+                style={{...chatStyles.button}}
+                className="btn-slide hover:bg-white hover:text-black"
+                >
+                  Private Messages
+                </button>
+              </Link>
+            </div>
+            <div className="flex items-center p-">
+              <span>Hello, {username}</span>
+              <button
+                onClick={logout}
+                style={{...chatStyles.button}}
+                className="btn-fade hover:bg-white hover:text-black"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </nav>
+      )}
+      
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? 
+              <Navigate to="/global" replace /> : 
+              <LoginPage onLogin={login} />
+          } 
+        />
+        <Route 
+          path="/global" 
+          element={
+            isAuthenticated ? 
+              <GlobalChatPage username={username} /> : 
+              <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/private" 
+          element={
+            isAuthenticated ? 
+              <PrivateChatPage username={username} /> : 
+              <Navigate to="/login" replace />
+          } 
+        />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
   )
 }
 

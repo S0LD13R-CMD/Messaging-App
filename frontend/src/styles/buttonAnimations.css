@@ -1,0 +1,97 @@
+/* Button Hover Animations */
+
+.btn-grow {
+  transition: transform 0.3s ease;
+}
+.btn-grow:hover {
+  transform: scale(1.05);
+}
+
+.btn-pulse {
+  transition: all 0.3s ease;
+}
+.btn-pulse:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 3px;
+  padding-top: 1px;
+}
+.btn-slide:hover {
+  transform: translateY(-3px);
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+}
+
+.btn-fade {
+  transition: all 0.3s ease;
+}
+.btn-fade:hover {
+  opacity: 0.9;
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+}
+
+/* Typewriter Animation */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  animation: 
+    typing 3.5s steps(40, end),
+    blink-caret 0.75s step-end infinite 0s,
+    hide-caret 0s ease 3.5s forwards;
+}
+
+/* Animation for typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* Animation for cursor effect */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: white }
+}
+
+/* Animation to hide cursor after typing completes */
+@keyframes hide-caret {
+  to { border-color: transparent }
+}
+
+/* Typewriter with delay */
+.typewriter-delay {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 0;
+  animation: 
+    typing 3.5s steps(40, end) 1s forwards,
+    blink-caret 0.75s step-end infinite 0s,
+    hide-caret 0s ease 4.5s forwards; /* 3.5s + 1s delay */
+}
+
+/* Infinite typewriter effect */
+.typewriter-infinite {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 0;
+  animation: 
+    typing-infinite 5s steps(40, end) infinite alternate,
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing-infinite {
+  0% { width: 0 }
+  50% { width: 100% }
+  100% { width: 0 }
+}
