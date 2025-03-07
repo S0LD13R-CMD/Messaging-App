@@ -12,17 +12,16 @@ public class ForumMessage {
 
     @Id
     private String id;
-    private String sender_id;
-    private String receiver_id;
-    private String thread_id;
+    private String senderId;
+    private String receiverId;
+    private String threadId;
     private String timestamp;
 
     public ForumMessage() {}
 
-    public ForumMessage(String sender_id, String receiver_id, String thread_id, String timestamp) {
-        this.sender_id = sender_id;
-        this.receiver_id = receiver_id;
-        this.thread_id = thread_id;
+    public ForumMessage(String senderId, String receiverId, String threadId, String timestamp) {
+        this.senderId = senderId;        this.receiverId = receiverId;
+        this.threadId = threadId;
         this.timestamp = timestamp;
     }
 }
