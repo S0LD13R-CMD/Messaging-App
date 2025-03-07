@@ -13,18 +13,18 @@ public class PrivateMessage {
     @Id
     private String id;
     private String content;
-    private String sender_id;
-    private String receiver_id;
-    private String private_chatroom_id;
+    private String senderId;
+    private String receiverId;
+    private String privateChatroomId;
     private String timestamp;
 
     public PrivateMessage() {}
 
-    public PrivateMessage(String content, String sender_id, String receiver_id, String private_chatroom_id, String timestamp) {
+    public PrivateMessage(String content, String senderId, String receiverId, String privateChatroomId, String timestamp) {
         this.content = content;
-        this.sender_id = sender_id;
-        this.receiver_id = receiver_id;
-        this.private_chatroom_id = private_chatroom_id;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.privateChatroomId = privateChatroomId;
         this.timestamp = timestamp;
     }
 }

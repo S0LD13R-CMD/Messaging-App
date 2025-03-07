@@ -13,14 +13,14 @@ public class GlobalMessage {
     @Id
     private String id;
     private String content;
-    private String sender_id;
+    private String senderId;
     private String timestamp;
 
     public GlobalMessage() {}
 
-    public GlobalMessage(String content, String sender_id, String timestamp) {
+    public GlobalMessage(String content, String senderId, String timestamp) {
         this.content = content;
-        this.sender_id = sender_id;
+        this.senderId = senderId;
         this.timestamp = timestamp;
     }
 }
