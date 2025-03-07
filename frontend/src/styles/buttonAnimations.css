@@ -1,0 +1,37 @@
+/* Button Hover Animations */
+
+.btn-grow {
+  transition: transform 0.3s ease;
+}
+.btn-grow:hover {
+  transform: scale(1.05);
+}
+
+.btn-pulse {
+  transition: all 0.3s ease;
+}
+.btn-pulse:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 3px;
+  padding-top: 2px;
+}
+.btn-slide:hover {
+  transform: translateY(-3px);
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+}
+
+.btn-fade {
+  transition: all 0.3s ease;
+}
+.btn-fade:hover {
+  opacity: 0.9;
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+} 
