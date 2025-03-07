@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+# Set default permissions for all jobs with least privilege
+permissions:
+  contents: read       # Only read access to repository content
+  actions: read        # Read access to actions
+  checks: write        # Write access for test/coverage reports
+  id-token: write      # Needed for upload artifacts
+  security-events: read # For reading security issues
+
 jobs:
   backend-build-and-test:
     name: Backend Build & Test
@@ -27,10 +35,10 @@ jobs:
           cd messaging.app
           mvn -B package --file pom.xml
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           cd messaging.app
-          mvn test
+          mvn test jacoco:report
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
@@ -39,6 +47,26 @@ jobs:
           report_paths: 'messaging.app/target/surefire-reports/TEST-*.xml'
           fail_on_failure: true
           summary: true
+          
+      - name: Upload Backend Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-coverage-report
+          path: messaging.app/target/site/jacoco/
+          retention-days: 7
+          
+      - name: Coverage Report Summary
+        run: |
+          cd messaging.app
+          echo "# Backend Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## JaCoCo Report" >> $GITHUB_STEP_SUMMARY
+          REPORT_PATH="target/site/jacoco/index.html"
+          if [ -f "$REPORT_PATH" ]; then
+            TOTAL_LINE=$(grep -o 'Total[^%]*%' "$REPORT_PATH" | head -1)
+            echo "- $TOTAL_LINE" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- Coverage report not found" >> $GITHUB_STEP_SUMMARY
+          fi
 
   frontend-build-and-test:
     name: Frontend Build & Test
@@ -65,11 +93,39 @@ jobs:
           cd frontend
           npm run build
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           cd frontend
-          npm test
-        # If your frontend tests aren't set up yet, you can comment this out
+          npm test -- --coverage
+          
+      - name: Upload Frontend Coverage Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage/
+          retention-days: 7
+          
+      - name: Coverage Report Summary
+        if: always()
+        run: |
+          cd frontend
+          echo "# Frontend Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          if [ -d "coverage" ]; then
+            echo "## Jest Coverage" >> $GITHUB_STEP_SUMMARY
+            SUMMARY_FILE="coverage/coverage-summary.json"
+            if [ -f "$SUMMARY_FILE" ]; then
+              TOTAL=$(grep -o '"total":{[^}]*}' "$SUMMARY_FILE" | head -1)
+              LINES=$(echo $TOTAL | grep -o '"lines":{[^}]*}' | head -1)
+              STATEMENTS=$(echo $TOTAL | grep -o '"statements":{[^}]*}' | head -1)
+              echo "- Lines: $(echo $LINES | grep -o '"pct":[0-9.]*' | cut -d':' -f2)%" >> $GITHUB_STEP_SUMMARY
+              echo "- Statements: $(echo $STATEMENTS | grep -o '"pct":[0-9.]*' | cut -d':' -f2)%" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- Coverage summary not found" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "- Coverage directory not found" >> $GITHUB_STEP_SUMMARY
+          fi
 
   lint:
     name: Code Quality Checks
