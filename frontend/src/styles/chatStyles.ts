@@ -48,14 +48,15 @@ export const chatStyles = {
   
   // Message display styles
   messageContainer: {
-    padding: '12px',
-    margin: '12px 0',
-    maxWidth: '70%',
+    padding: '8px',
+    margin: '8px 0',
+    maxWidth: '55%',
     borderRadius: '12px',
     backgroundColor: 'transparent',
     border: '2px solid rgb(255, 255, 255)',
     position: 'relative' as const,
     paddingTop: '26px',
+    minWidth: '120px',
   },
   
   // Users own message style

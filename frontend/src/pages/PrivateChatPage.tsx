@@ -23,11 +23,12 @@ const PrivateChatPage: React.FC<PrivateChatPageProps> = ({ username }) => {
 
   // Styling for the main container
   const containerStyle = {
-    border: '2px solid #CBD5E0',
+    border: '2px solid rgb(255, 255, 255)',
     borderRadius: '24px',  // Increased rounded corners
-    height: 'calc(100vh - 64px)',
+    height: 'calc(100vh - 85px)',
     overflow: 'hidden',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    paddingTop: '10px',  // Add padding to the top inside the container
   };
 
   return (
@@ -64,7 +65,7 @@ const PrivateChatPage: React.FC<PrivateChatPageProps> = ({ username }) => {
       </div>
 
       {/* Chat area */}
-      <div className="flex-1 p-6">
+      <div className="px-4 py-6 sm:px-0 mx-auto flex-1">
         <div style={containerStyle}>
           {selectedUser ? (
             <PrivateChat 

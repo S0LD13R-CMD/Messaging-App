@@ -58,7 +58,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({ recipientId, recipientName, s
 
   return (
     <div className="flex flex-col h-full">
-      <div className="text-xl font-bold mb-4">
+      <div className="text-xl font-bold mb-4 pt-4 px-4">
         Chat with {recipientName}
       </div>
       
@@ -86,6 +86,7 @@ const PrivateChat: React.FC<PrivateChatProps> = ({ recipientId, recipientName, s
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
           style={chatStyles.input}
+          className="animated-input"
           placeholder={`Message to ${recipientName}...`}
         />
         <button 

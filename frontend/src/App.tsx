@@ -26,24 +26,20 @@ function App() {
   return (
     <Router>
       {isAuthenticated && (
-        <nav className="bg-gray-800 text-white p-4">
-          <div className="max-w-7xl mx-auto flex justify-between py-3">
-            <div className="flex space-x-4">
-              <Link to="/global" className="px-3 py-2 rounded text-white font-medium">
+        <nav className="text-white p-4 pb-8 mb-8">
+          <div className="max-w-screen-2xl mx-auto flex justify-between">
+            <div className="flex">
+              <Link to="/global" className="rounded text-white font-medium">
                 <button
-                style={{
-                  ...chatStyles.button
-                }}
+                style={{...chatStyles.button}}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
                   Global Chat
                 </button>
               </Link>
-              <Link to="/private" className="px-3 py-2 rounded text-white font-medium">
+              <Link to="/private" className="rounded text-white font-medium">
                 <button
-                style={{
-                  ...chatStyles.button
-                }}
+                style={{...chatStyles.button}}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
                   Private Messages
@@ -54,9 +50,7 @@ function App() {
               <span>Hello, {username}</span>
               <button
                 onClick={logout}
-                style={{
-                  ...chatStyles.button
-                }}
+                style={{...chatStyles.button}}
                 className="btn-fade hover:bg-white hover:text-black"
               >
                 Logout
