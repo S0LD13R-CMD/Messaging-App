@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PrivateChat from '../components/chat/PrivateChat';
 import { User } from '../types/messageTypes';
+import Button from '../components/ui/Button';
 
 interface PrivateChatPageProps {
   username: string;
@@ -14,9 +15,9 @@ const PrivateChatPage: React.FC<PrivateChatPageProps> = ({ username }) => {
     // Here you would fetch users from your API
     // For demonstration:
     const demoUsers: User[] = [
-      { id: '1', username: 'Alice', isOnline: true },
-      { id: '2', username: 'Bob', isOnline: true },
-      { id: '3', username: 'Charlie', isOnline: false }
+      { id: '1', username: 'Alice' },
+      { id: '2', username: 'Bob' },
+      { id: '3', username: 'Charlie' }
     ];
     setUsers(demoUsers);
   }, []);
@@ -31,41 +32,40 @@ const PrivateChatPage: React.FC<PrivateChatPageProps> = ({ username }) => {
     paddingTop: '10px',  // Add padding to the top inside the container
   };
 
+  // Sidebar styling
+  const sidebarStyle = {
+    backgroundColor: 'black',
+    color: 'white',
+    paddingTop: '10px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+  };
+
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-black flex">
       {/* Sidebar with users */}
-      <div className="w-64 bg-white shadow-md">
-        <div className="p-4 font-bold text-lg border-b">
+      <div className="w-64 shadow-md" style={sidebarStyle}>
+        <div className="p-4 font-bold text-lg border-b text-white text-center mb-4">
           Private Messages
         </div>
-        <div className="overflow-y-auto h-[calc(100vh-64px)]">
+        <div className="overflow-y-auto h-[calc(100vh-64px)] px-4">
           {users.map(user => (
-            <div 
+            <Button
               key={user.id}
-              className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${
-                selectedUser?.id === user.id ? 'bg-blue-50' : ''
-              }`}
+              fullWidth
+              animation="slide"
+              variant={selectedUser?.id === user.id ? 'selected' : 'default'}
               onClick={() => setSelectedUser(user)}
             >
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <span className={`h-3 w-3 rounded-full inline-block ${
-                    user.isOnline ? 'bg-green-400' : 'bg-gray-400'
-                  }`}></span>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-900">
-                    {user.username}
-                  </p>
-                </div>
-              </div>
-            </div>
+              {user.username}
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Chat area */}
-      <div className="px-4 py-6 sm:px-0 mx-auto flex-1">
+      <div className="px-5 py-6 sm:px-0 mx-auto flex-1">
         <div style={containerStyle}>
           {selectedUser ? (
             <PrivateChat 
