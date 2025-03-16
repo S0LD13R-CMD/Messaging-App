@@ -1,15 +1,21 @@
-// Chat Styles - Shared styles for chat components
 export const chatStyles = {
-  // Message box styles are common between global and private chats
-  containerStyles: {
-    border: '2px solidrgb(255, 255, 255)',
+  containerStyle1: {
+    border: '2px solid rgb(255, 255, 255)',
     borderRadius: '24px',
     height: 'calc(100vh - 200px)',
     overflow: 'hidden',
     boxShadow: '0 4px 6px rgb(30, 30, 30)'
   },
+
+  containerStyle2: {
+    border: '2px solid rgb(255, 255, 255)',
+    borderRadius: '24px',
+    height: 'calc(100vh - 85px)',
+    overflow: 'hidden',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    paddingTop: '10px',
+  },
   
-  // Message input styles
   inputContainer: {
     display: 'flex',
     padding: '16px',
@@ -41,9 +47,20 @@ export const chatStyles = {
     color: 'white',
     border: '2px solid rgb(255, 255, 255)',
     padding: '10px 24px',
-    borderRadius: '8px',
+    borderRadius: '12px',
     cursor: 'pointer',
     marginLeft: '8px',
+  },
+
+  modularButtonStyle: {
+    backgroundColor: 'black',
+    color: 'white',
+    border: '2px solid white',
+    borderRadius: '12px',
+    margin: '8px',
+    padding: '10px 4px',
+    width: '90%',
+    textAlign: 'center' as const,
   },
   
   // Message display styles
@@ -165,25 +182,18 @@ export const userListStyles = {
     backgroundColor: '#F3F4F6',
   },
   
-  onlineIndicator: {
-    height: '12px',
-    width: '12px',
-    borderRadius: '50%',
-    display: 'inline-block',
-  },
-  
-  online: {
-    backgroundColor: '#34D399',
-  },
-  
-  offline: {
-    backgroundColor: '#9CA3AF',
-  },
-  
   userName: {
     fontSize: '0.875rem',
     fontWeight: '500',
     color: '#111827',
     marginLeft: '12px',
+  },
+
+  sidebarStyle: {
+    backgroundColor: 'black',
+    color: 'white',
+    paddingTop: '10px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
   }
 }; 

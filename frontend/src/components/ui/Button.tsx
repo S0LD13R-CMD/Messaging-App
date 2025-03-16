@@ -1,5 +1,6 @@
 import React, { ButtonHTMLAttributes } from 'react';
 import '../../styles/buttonAnimations.css';
+import { chatStyles } from '../../styles/chatStyles';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'selected' | 'nav';
@@ -16,23 +17,12 @@ const Button: React.FC<ButtonProps> = ({
   children, 
   ...props 
 }) => {
-  // Base styles to match the navigation buttons
-  const baseStyle = {
-    backgroundColor: 'black',
-    color: 'white',
-    border: '2px solid white',
-    borderRadius: '12px',
-    margin: '4px',
-    padding: '8px 10px',
-    width: fullWidth ? '90%' : 'auto',
-    textAlign: 'center' as const,
-  };
 
   // Variant styles
   const variantStyles = {
     default: {},
     selected: {
-      backgroundColor: 'rgb(62, 0, 100)',
+      border: '2px solid rgb(62, 0, 100)',
     },
     nav: {
       margin: '0 4px',
@@ -46,8 +36,9 @@ const Button: React.FC<ButtonProps> = ({
     <button
       className={`${animationClass} ${className}`}
       style={{
-        ...baseStyle,
+        ...chatStyles.modularButtonStyle,
         ...variantStyles[variant],
+        width: fullWidth ? '95%' : 'auto',
       }}
       {...props}
     >
