@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { loginStyles } from '../styles/loginStyles';
+import { Link } from 'react-router-dom';
 
 interface LoginPageProps {
   onLogin: (username: string) => void;
@@ -49,7 +50,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             />
           </div>
           
-          <a href="#" style={loginStyles.link}>Need to make account</a>
+          <Link to="/register" style={loginStyles.link}>Need to make account</Link>
           
           <button 
             type="submit" 
