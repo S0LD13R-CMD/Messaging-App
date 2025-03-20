@@ -22,10 +22,8 @@ class GlobalMessageRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Clear collection before each test
         globalMessageRepository.deleteAll();
 
-        // Test data.
         globalMessageRepository.save(new GlobalMessage("Hello World", "user123", "2025-03-07T10:00:00Z"));
         globalMessageRepository.save(new GlobalMessage("Goodbye", "user456", "2025-03-07T11:00:00Z"));
     }
