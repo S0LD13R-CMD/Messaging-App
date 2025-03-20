@@ -1,9 +1,7 @@
 package com.qmul.messaging.app.controller;
 
-import com.qmul.messaging.app.model.ForumMessage;
 import com.qmul.messaging.app.model.GlobalMessage;
 import com.qmul.messaging.app.model.PrivateMessage;
-import com.qmul.messaging.app.repository.ForumMessageRepository;
 import com.qmul.messaging.app.repository.GlobalMessageRepository;
 import com.qmul.messaging.app.repository.PrivateMessageRepository;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +18,10 @@ import java.util.List;
 public class MessageController {
 
     private final GlobalMessageRepository globalMessageRepository;
-    private final ForumMessageRepository forumMessageRepository;
     private final PrivateMessageRepository privateMessageRepository;
 
-    public MessageController(GlobalMessageRepository globalMessageRepository, ForumMessageRepository forumMessageRepository, PrivateMessageRepository privateMessageRepository) {
+    public MessageController(GlobalMessageRepository globalMessageRepository, PrivateMessageRepository privateMessageRepository) {
         this.globalMessageRepository = globalMessageRepository;
-        this.forumMessageRepository = forumMessageRepository;
         this.privateMessageRepository = privateMessageRepository;
     }
 
@@ -44,23 +40,6 @@ public class MessageController {
             return ResponseEntity.ok(savedMessage); // Returns 200 OK with the saved message
         } catch (Exception e) {
             return ResponseEntity.status(500).build(); // Returns 500 Internal Server Error if something fails
-        }
-    }
-
-    /////////////////////////////// FORUM MESSAGES API /////////////////////////////////
-    // change this to find all by ids
-    @GetMapping("/forum")
-    public List<ForumMessage> getAllForumMessages() {
-        return forumMessageRepository.findAll();
-    }
-
-    @PostMapping("/forum")
-    public ResponseEntity<ForumMessage> createForumMessage(@RequestBody ForumMessage message) {
-        try {
-            ForumMessage savedMessage = forumMessageRepository.save(message);
-            return ResponseEntity.ok(savedMessage);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
         }
     }
 
