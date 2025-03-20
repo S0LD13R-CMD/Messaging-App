@@ -2,7 +2,6 @@ package com.qmul.messaging.app.repository;
 
 import com.qmul.messaging.app.model.ForumMessage;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
