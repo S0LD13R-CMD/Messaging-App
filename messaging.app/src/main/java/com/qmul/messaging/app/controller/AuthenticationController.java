@@ -52,16 +52,5 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return ResponseEntity.ok("Login successful");
     }
-
-    @Data
-    static class RegisterRequest {
-        private String username;
-        private String password;
-    }
-
-    @Data
-    static class LoginRequest {
-        private String username;
-        private String password;
-    }
+    
 }
