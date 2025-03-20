@@ -5,6 +5,11 @@ import com.qmul.messaging.app.repository.UsersRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,21 +23,44 @@ public class AuthenticationController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (usersRepository.existsByUsername(request.getUsername())) {
+    public ResponseEntity<?> register(
+            @RequestParam String username,
+            @RequestParam String password) {
+        if (usersRepository.existsByUsername(username)) {
             return ResponseEntity.badRequest().body("Username is already in use.");
         }
 
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
-        Users newUser = new Users(request.getUsername(), hashedPassword);
+        String hashedPassword = passwordEncoder.encode(password);
+        Users newUser = new Users(username, hashedPassword);
         usersRepository.save(newUser);
 
         return ResponseEntity.ok("User registered successfully");
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestParam String username,
+            @RequestParam String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return ResponseEntity.ok("Login successful");
+    }
+
     @Data
     static class RegisterRequest {
+        private String username;
+        private String password;
+    }
+
+    @Data
+    static class LoginRequest {
         private String username;
         private String password;
     }
