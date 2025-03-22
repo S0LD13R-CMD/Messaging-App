@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import './App.css'
 import './styles/buttonAnimations.css'
 import LoginPage from './pages/LoginPage'
+import BackendRegistrationPage from './pages/RegistrationPage'
 import GlobalChatPage from './pages/GlobalChatPage'
 import PrivateChatPage from './pages/PrivateChatPage'
 import { chatStyles } from './styles/chatStyles'
@@ -67,6 +68,14 @@ function App() {
             isAuthenticated ? 
               <Navigate to="/global" replace /> : 
               <LoginPage onLogin={login} />
+          } 
+        />
+        <Route 
+          path="/register" 
+          element={
+            isAuthenticated ? 
+              <Navigate to="/global" replace /> : 
+              <BackendRegistrationPage />
           } 
         />
         <Route 
