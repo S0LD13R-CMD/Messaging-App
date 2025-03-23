@@ -22,7 +22,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
   // Handle escape key to close popup
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Tab' && isOpen) {
         onClose();
       }
     };

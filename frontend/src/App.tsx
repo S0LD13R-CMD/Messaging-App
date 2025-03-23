@@ -8,6 +8,7 @@ import GlobalChatPage from './pages/GlobalChatPage'
 import PrivateChatPage from './pages/PrivateChatPage'
 import { chatStyles } from './styles/chatStyles'
 import SearchPopup from './components/ui/SearchPopup'
+import ErrorPopup from './components/ui/ErrorPopup'
 
 function App() {
   // Authentication and user states
@@ -16,6 +17,10 @@ function App() {
   const [hasUnreadPrivate, setHasUnreadPrivate] = useState(false);
   const [searchedUser, setSearchedUser] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
+  // Error popup state
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isErrorOpen, setIsErrorOpen] = useState(false);
   
   // For demo purposes only - in a real app, you would use a proper auth system
   const login = (user: string) => {
@@ -33,10 +38,10 @@ function App() {
     setHasUnreadPrivate(false);
   };
 
-  // Mock user search function - in a real app, this would query your API
+  // Mock user search function - in a real app, this would query the database
   const searchUser = (searchUsername: string) => {
     // Hard-coded demo users for testing
-    const demoUsers = ['Alice', 'Bob', 'Charlie'];
+    const demoUsers = ['Alice', 'Bob', 'Charlie', 'Mahir', 'Saad', 'Martin'];
     
     if (demoUsers.map(name => name.toLowerCase()).includes(searchUsername.toLowerCase())) {
       // Navigate to private messages and pass the searched user
@@ -44,9 +49,15 @@ function App() {
       setIsSearchOpen(false);
       return true;
     } else {
-      alert(`User "${searchUsername}" not found.`);
+      // Show custom error popup instead of alert
+      setErrorMessage(`User "${searchUsername}" not found.`);
+      setIsErrorOpen(true);
       return false;
     }
+  };
+
+  const closeErrorPopup = () => {
+    setIsErrorOpen(false);
   };
 
   return (
@@ -67,7 +78,7 @@ function App() {
                 <button
                 style={{
                   ...chatStyles.button,
-                  backgroundColor: hasUnreadPrivate ? 'rgba(220, 38, 38, 0.8)' : undefined
+                  backgroundColor: hasUnreadPrivate ? 'rgba(220, 38, 38, 0.8)' : 'black'
                 }}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
@@ -101,6 +112,13 @@ function App() {
         isOpen={isSearchOpen} 
         onClose={() => setIsSearchOpen(false)}
         onSearch={searchUser}
+      />
+      
+      {/* Error popup */}
+      <ErrorPopup
+        isOpen={isErrorOpen}
+        onClose={closeErrorPopup}
+        message={errorMessage}
       />
       
       <Routes>
