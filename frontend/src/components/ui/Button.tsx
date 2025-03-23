@@ -10,6 +10,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   height?: string;
   bgColor?: string;
   margin?: string;
+  padding?: string;
+  border?: string;
   children: React.ReactNode;
 }
 
@@ -20,7 +22,9 @@ const Button: React.FC<ButtonProps> = ({
   width,
   height,
   bgColor,
+  border,
   margin,
+  padding,
   className = '',
   children,
   ...props
@@ -58,6 +62,8 @@ const Button: React.FC<ButtonProps> = ({
         height: height || undefined,
         backgroundColor: bgColor || 'black',
         margin: margin || undefined,
+        padding: padding || undefined,
+        border: border || '2px solid rgb(255, 255, 255)',
       }}
       {...props}
     >
