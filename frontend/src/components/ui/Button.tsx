@@ -7,6 +7,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   animation?: 'slide' | 'grow' | 'pulse' | 'fade' | 'none';
   fullWidth?: boolean;
   width?: string;
+  height?: string;
+  bgColor?: string;
+  margin?: string;
   children: React.ReactNode;
 }
 
@@ -15,6 +18,9 @@ const Button: React.FC<ButtonProps> = ({
   animation = 'slide',
   fullWidth = false,
   width,
+  height,
+  bgColor,
+  margin,
   className = '',
   children,
   ...props
@@ -49,6 +55,9 @@ const Button: React.FC<ButtonProps> = ({
         ...chatStyles.modularButtonStyle,
         ...variantStyles[variant],
         width: buttonWidth,
+        height: height || undefined,
+        backgroundColor: bgColor || 'black',
+        margin: margin || undefined,
       }}
       {...props}
     >

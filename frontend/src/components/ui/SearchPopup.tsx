@@ -69,11 +69,11 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
             backgroundColor: 'black',
             }}>
           <div className="p-8">
-            <h3 className="text-white text-2xl text-center">Find a User</h3>
+            <h2 className="text-white text-2xl text-center">Find a User</h2>
           </div>
           
-          <div className="p-8 ">
-            <form onSubmit={handleSubmit} style={chatStyles.inputContainer}>
+          <div className="p-4">
+            <form onSubmit={handleSubmit} style={{...chatStyles.inputContainer, padding: '16px'}}>
               <input
                 ref={inputRef}
                 type="text"
@@ -81,23 +81,28 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder="Enter username..."
                 className="animated-input"
-                style={chatStyles.input}
+                style={{...chatStyles.input, width: '100%'}}
               />
-              <Button 
-                type="submit"
-                animation="slide"
-                width="95%"
-              >
-                Search
-              </Button>
             </form>
           </div>
-                
-          <div className="p-4 flex justify-center">
+          
+          <div className="p-4 flex justify-center space-x-4">
+            <Button 
+              type="submit"
+              onClick={handleSubmit}
+              animation="slide"
+              width="45%"
+              height="45px"
+            >
+              Search
+            </Button>
+            
             <Button 
               onClick={onClose}
               animation="slide"
-              width="95%"
+              width="45%"
+              height="45px"
+              bgColor="rgb(62, 0, 100)"
             >
               Cancel
             </Button>
