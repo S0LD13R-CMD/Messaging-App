@@ -36,6 +36,10 @@
   color: black !important;
 }
 
+.unread-message {
+  background-color: red !important;
+}
+
 /* Typewriter Animation */
 .typewriter {
   overflow: hidden;

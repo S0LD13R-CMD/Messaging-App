@@ -12,7 +12,7 @@ function App() {
   // Authentication and user states
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
-  
+  const [hasUnreadPrivate, setHasUnreadPrivate] = useState(false);
   // For demo purposes only - in a real app, you would use a proper auth system
   const login = (user: string) => {
     setUsername(user);
@@ -22,6 +22,11 @@ function App() {
   const logout = () => {
     setIsAuthenticated(false);
     setUsername('');
+  };
+
+  // Clear notifications when visiting private messages page
+  const clearPrivateNotifications = () => {
+    setHasUnreadPrivate(false);
   };
 
   return (
@@ -38,9 +43,12 @@ function App() {
                   Global Chat
                 </button>
               </Link>
-              <Link to="/private" className="rounded text-white font-medium">
+              <Link to="/private" className="rounded text-white font-medium" onClick={clearPrivateNotifications}>
                 <button
-                style={{...chatStyles.button}}
+                style={{
+                  ...chatStyles.button,
+                  backgroundColor: hasUnreadPrivate ? 'rgba(220, 38, 38, 0.8)' : undefined
+                }}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
                   Private Messages
@@ -90,7 +98,11 @@ function App() {
           path="/private" 
           element={
             isAuthenticated ? 
-              <PrivateChatPage username={username} /> : 
+              <PrivateChatPage 
+                username={username} 
+                onNewMessage={() => setHasUnreadPrivate(true)}
+                clearNotifications={clearPrivateNotifications}
+              /> : 
               <Navigate to="/login" replace />
           } 
         />

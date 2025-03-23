@@ -63,7 +63,6 @@ export const chatStyles = {
     textAlign: 'center' as const,
   },
   
-  // Message display styles
   messageContainer: {
     padding: '8px',
     margin: '8px 0',
@@ -76,13 +75,11 @@ export const chatStyles = {
     minWidth: '120px',
   },
   
-  // Users own message style
   sentMessage: {
     marginLeft: 'auto',
     borderColor: 'rgb(100, 100, 100)',
   },
   
-  // Received message style
   receivedMessage: {
     marginRight: 'auto',
     borderColor: 'rgb(255, 255, 255)',
