@@ -7,11 +7,20 @@ import BackendRegistrationPage from './pages/RegistrationPage'
 import GlobalChatPage from './pages/GlobalChatPage'
 import PrivateChatPage from './pages/PrivateChatPage'
 import { chatStyles } from './styles/chatStyles'
+import SearchPopup from './components/ui/SearchPopup'
+import ErrorPopup from './components/ui/ErrorPopup'
 
 function App() {
   // Authentication and user states
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
+  const [hasUnreadPrivate, setHasUnreadPrivate] = useState(false);
+  const [searchedUser, setSearchedUser] = useState<string | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  
+  // Error popup state
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isErrorOpen, setIsErrorOpen] = useState(false);
   
   // For demo purposes only - in a real app, you would use a proper auth system
   const login = (user: string) => {
@@ -22,6 +31,33 @@ function App() {
   const logout = () => {
     setIsAuthenticated(false);
     setUsername('');
+  };
+
+  // Clear notifications when visiting private messages page
+  const clearPrivateNotifications = () => {
+    setHasUnreadPrivate(false);
+  };
+
+  // Mock user search function - in a real app, this would query the database
+  const searchUser = (searchUsername: string) => {
+    // Hard-coded demo users for testing
+    const demoUsers = ['Alice', 'Bob', 'Charlie', 'Mahir', 'Saad', 'Martin'];
+    
+    if (demoUsers.map(name => name.toLowerCase()).includes(searchUsername.toLowerCase())) {
+      // Navigate to private messages and pass the searched user
+      setSearchedUser(searchUsername);
+      setIsSearchOpen(false);
+      return true;
+    } else {
+      // Show custom error popup instead of alert
+      setErrorMessage(`Yapper "${searchUsername}" not found. You sure they exist? You may be schizo...`);
+      setIsErrorOpen(true);
+      return false;
+    }
+  };
+
+  const closeErrorPopup = () => {
+    setIsErrorOpen(false);
   };
 
   return (
@@ -35,20 +71,30 @@ function App() {
                 style={{...chatStyles.button}}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
-                  Global Chat
+                  Global Yap
                 </button>
               </Link>
-              <Link to="/private" className="rounded text-white font-medium">
+              <Link to="/private" className="rounded text-white font-medium" onClick={clearPrivateNotifications}>
                 <button
-                style={{...chatStyles.button}}
+                style={{
+                  ...chatStyles.button,
+                  backgroundColor: hasUnreadPrivate ? 'rgba(220, 38, 38, 0.8)' : 'black'
+                }}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
-                  Private Messages
+                  Private Yaps
                 </button>
               </Link>
             </div>
             <div className="flex items-center p-">
-              <span>Hello, {username}</span>
+              <span className="mr-4">Hello, {username}</span>
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                style={{...chatStyles.button}}
+                className="btn-fade hover:bg-white hover:text-black mr-2"
+              >
+                Search Yapper
+              </button>
               <button
                 onClick={logout}
                 style={{...chatStyles.button}}
@@ -60,6 +106,20 @@ function App() {
           </div>
         </nav>
       )}
+      
+      {/* Search popup */}
+      <SearchPopup 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)}
+        onSearch={searchUser}
+      />
+      
+      {/* Error popup */}
+      <ErrorPopup
+        isOpen={isErrorOpen}
+        onClose={closeErrorPopup}
+        message={errorMessage}
+      />
       
       <Routes>
         <Route 
@@ -90,7 +150,13 @@ function App() {
           path="/private" 
           element={
             isAuthenticated ? 
-              <PrivateChatPage username={username} /> : 
+              <PrivateChatPage 
+                username={username} 
+                onNewMessage={() => setHasUnreadPrivate(true)}
+                clearNotifications={clearPrivateNotifications}
+                searchedUser={searchedUser}
+                onUserSelected={() => setSearchedUser(null)}
+              /> : 
               <Navigate to="/login" replace />
           } 
         />

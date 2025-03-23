@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { loginStyles } from '../styles/loginStyles';
 import { Link } from 'react-router-dom';
+import Button from '../components/ui/Button';
 
 interface LoginPageProps {
   onLogin: (username: string) => void;
@@ -22,6 +23,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     <div style={loginStyles.container}>
       <div style={loginStyles.formContainer}>
         <h1 style={loginStyles.title}>Yappatron</h1>
+        <h2 style={loginStyles.subtitle}>Unleash your inner yapper</h2>
         
         <form style={loginStyles.form} onSubmit={handleSubmit}>
           <div style={loginStyles.formGroup}>
@@ -52,12 +54,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           
           <Link to="/register" style={loginStyles.link}>Need to make account</Link>
           
-          <button 
+          <Button
+            animation="grow"
             type="submit" 
             style={loginStyles.button}
           >
             Sign in
-          </button>
+          </Button>
         </form>
       </div>
     </div>

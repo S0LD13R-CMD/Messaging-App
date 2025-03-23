@@ -29,9 +29,15 @@ export const loginStyles = {
     fontSize: '3.75rem',
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: '4rem',
+    marginBottom: '1rem',
     alignSelf: 'center',
     fontFamily: "'Geo', sans-serif",
+  },
+  subtitle: {
+    fontSize: '1.25rem',
+    color: 'white',
+    marginBottom: '2rem',
+    alignSelf: 'center',
   },
   form: {
     width: '100%',

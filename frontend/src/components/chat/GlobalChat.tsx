@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Message } from '../../types/messageTypes';
 import { chatStyles } from '../../styles/chatStyles';
 import '../../styles/buttonAnimations.css';
+import Button from '../ui/Button';
 
 interface GlobalChatProps {
   username: string;
@@ -89,15 +90,17 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
           onChange={e => setNewMessage(e.target.value)}
           style={chatStyles.input}
           className="animated-input"
-          placeholder="Type a message..."
+          placeholder="Your yapping goes here..."
         />
-        <button 
+        <Button 
           type="submit"
-          style={chatStyles.button}
-          className="btn-slide"
+          animation="slide"
+          margin="0 0 0 10px"
+          padding="8px 16px"
+          border="2px solid rgb(62, 0, 100)"
         >
-          Send
-        </button>
+          Yap
+        </Button>
       </form>
     </div>
   );
