@@ -6,6 +6,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'selected' | 'nav';
   animation?: 'slide' | 'grow' | 'pulse' | 'fade' | 'none';
   fullWidth?: boolean;
+  width?: string;
   children: React.ReactNode;
 }
 
@@ -13,9 +14,10 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'default', 
   animation = 'slide',
   fullWidth = false,
+  width,
   className = '',
-  children, 
-  ...props 
+  children,
+  ...props
 }) => {
 
   // Variant styles
@@ -32,13 +34,21 @@ const Button: React.FC<ButtonProps> = ({
   // Animation classes
   const animationClass = animation !== 'none' ? `btn-${animation}` : '';
 
+  // Determine width based on props
+  let buttonWidth = 'auto';
+  if (fullWidth) {
+    buttonWidth = '95%';
+  } else if (width) {
+    buttonWidth = width;
+  }
+
   return (
     <button
       className={`${animationClass} ${className}`}
       style={{
         ...chatStyles.modularButtonStyle,
         ...variantStyles[variant],
-        width: fullWidth ? '95%' : 'auto',
+        width: buttonWidth,
       }}
       {...props}
     >

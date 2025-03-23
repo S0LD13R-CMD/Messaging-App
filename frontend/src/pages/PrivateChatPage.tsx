@@ -8,12 +8,16 @@ interface PrivateChatPageProps {
   username: string;
   onNewMessage?: () => void;
   clearNotifications?: () => void;
+  searchedUser?: string | null;
+  onUserSelected?: () => void;
 }
 
 const PrivateChatPage: React.FC<PrivateChatPageProps> = ({ 
   username, 
   onNewMessage,
-  clearNotifications 
+  clearNotifications,
+  searchedUser,
+  onUserSelected
 }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -87,6 +91,26 @@ const PrivateChatPage: React.FC<PrivateChatPageProps> = ({
     
     return () => clearTimeout(timer);
   }, [username, selectedUser, onNewMessage, clearNotifications]);
+
+  // Handle the case when a user is searched
+  useEffect(() => {
+    if (searchedUser && users.length > 0) {
+      // Find the user in our list
+      const foundUser = users.find(
+        user => user.username.toLowerCase() === searchedUser.toLowerCase()
+      );
+      
+      if (foundUser) {
+        setSelectedUser(foundUser);
+        // Clear notification for this user
+        setUnreadMessages(prev => ({ ...prev, [foundUser.id]: false }));
+        // Notify parent that we've handled the search
+        if (onUserSelected) {
+          onUserSelected();
+        }
+      }
+    }
+  }, [searchedUser, users, onUserSelected]);
 
   const handleSelectUser = (user: User) => {
     setSelectedUser(user);
