@@ -99,7 +99,7 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
           padding="8px 16px"
           border="2px solid rgb(62, 0, 100)"
         >
-          Send
+          Yap
         </Button>
       </form>
     </div>

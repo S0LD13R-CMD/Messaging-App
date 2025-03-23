@@ -50,7 +50,7 @@ function App() {
       return true;
     } else {
       // Show custom error popup instead of alert
-      setErrorMessage(`User "${searchUsername}" not found.`);
+      setErrorMessage(`Yapper "${searchUsername}" not found. You sure they exist? You may be schizo...`);
       setIsErrorOpen(true);
       return false;
     }
@@ -71,7 +71,7 @@ function App() {
                 style={{...chatStyles.button}}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
-                  Global Chat
+                  Global Yap
                 </button>
               </Link>
               <Link to="/private" className="rounded text-white font-medium" onClick={clearPrivateNotifications}>
@@ -82,7 +82,7 @@ function App() {
                 }}
                 className="btn-slide hover:bg-white hover:text-black"
                 >
-                  Private Messages
+                  Private Yaps
                 </button>
               </Link>
             </div>
@@ -93,7 +93,7 @@ function App() {
                 style={{...chatStyles.button}}
                 className="btn-fade hover:bg-white hover:text-black mr-2"
               >
-                Search User
+                Search Yapper
               </button>
               <button
                 onClick={logout}

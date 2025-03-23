@@ -67,21 +67,24 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
             marginLeft: 'auto',
             marginRight: 'auto',
             backgroundColor: 'black',
+            padding: '20px',
+            maxHeight: '300px'
             }}>
-          <div className="p-8">
-            <h2 className="text-white text-2xl text-center">Find a User</h2>
+          <div className="p-4 text-center">
+            <h3 className="text-white text-2xl mb-2">Find a Yapper</h3>
+            <div className="border-t border-gray-700 w-1/3 mx-auto my-4"></div>
           </div>
           
-          <div className="p-4">
-            <form onSubmit={handleSubmit} style={{...chatStyles.inputContainer, padding: '16px'}}>
+          <div className="px-4 pb-4">
+            <form onSubmit={handleSubmit} style={chatStyles.inputContainer}>
               <input
                 ref={inputRef}
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Enter username..."
+                placeholder="Who do you wanna yap with?"
                 className="animated-input"
-                style={{...chatStyles.input, width: '100%'}}
+                style={chatStyles.input}
               />
             </form>
           </div>
@@ -94,7 +97,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
               width="45%"
               height="45px"
             >
-              Search
+              Search for the Yapper
             </Button>
             
             <Button 
