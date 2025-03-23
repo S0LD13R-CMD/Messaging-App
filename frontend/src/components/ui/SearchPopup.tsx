@@ -90,7 +90,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
             <Button 
               type="submit"
               onClick={handleSubmit}
-              animation="slide"
+              animation="grow"
               width="45%"
               height="45px"
             >
@@ -99,7 +99,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ onClose, onSearch, isOpen }) 
             
             <Button 
               onClick={onClose}
-              animation="slide"
+              animation="fade"
               width="45%"
               height="45px"
               bgColor="rgb(62, 0, 100)"
