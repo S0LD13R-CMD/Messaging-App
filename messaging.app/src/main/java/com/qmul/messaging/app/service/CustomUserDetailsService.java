@@ -1,4 +1,4 @@
-package com.qmul.messaging.app.security;
+package com.qmul.messaging.app.service;
 
 import com.qmul.messaging.app.model.Users;
 import com.qmul.messaging.app.repository.UsersRepository;
@@ -16,7 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users user = usersRepository.findByUsername(username);
+        Users user = usersRepository.findByUsernameIgnoreCase(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found: " + username);
         }

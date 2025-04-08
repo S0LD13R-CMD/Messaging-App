@@ -21,6 +21,10 @@ import java.util.Map;
 @RequestMapping("/authentication")
 public class AuthenticationController {
 
+    private static final String USERNAME_REGEX = "^[a-zA-Z0-9_]{3,20}$";
+
+    private static final String PASSWORD_REGEX = "^[a-zA-Z0-9@#$%^&+=!.,:;()\\[\\]{}\\-_]{8,50}$";
+
     @Autowired
     private UsersRepository usersRepository;
 
@@ -32,9 +36,22 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        String password = request.get("password");
-        if (usersRepository.existsByUsername(username)) {
+        final String username = request.get("username");
+        final String password = request.get("password");
+
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return ResponseEntity.badRequest().body("Username and password must not be blank.");
+        }
+
+        if (!usernameValidityChecker(username)) {
+            return ResponseEntity.badRequest().body("Invalid username. Use 3–20 characters: letters, numbers, or underscores.");
+        }
+
+        if (!passwordValidityChecker(password)) {
+            return ResponseEntity.badRequest().body("Invalid password. Must be 8–50 characters and contain only permitted characters.");
+        }
+
+        if (usersRepository.existsByUsernameIgnoreCase(username)) {
             return ResponseEntity.badRequest().body("Username is already in use.");
         }
 
@@ -47,8 +64,21 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> request, HttpSession session) {
-        String username = request.get("username");
-        String password = request.get("password");
+        final String username = request.get("username");
+        final String password = request.get("password");
+
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return ResponseEntity.badRequest().body("Username and password must not be blank.");
+        }
+
+        if (!usernameValidityChecker(username)) {
+            return ResponseEntity.badRequest().body("Invalid username.");
+        }
+
+        if (!passwordValidityChecker(password)) {
+            return ResponseEntity.badRequest().body("Invalid password.");
+        }
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
@@ -64,6 +94,13 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("Logout successful");
+    }
+
     //to be removed for production use, only for testing authentication
     @GetMapping("/session")
     public ResponseEntity<?> checkSession(HttpSession session) {
@@ -71,5 +108,12 @@ public class AuthenticationController {
         return ResponseEntity.ok("sessionId: " + session.getId() + ", username: " + username);
     }
 
+    private boolean usernameValidityChecker(String username) {
+        return username != null && username.matches(USERNAME_REGEX);
+    }
+
+    private boolean passwordValidityChecker(String password) {
+        return password != null && password.matches(PASSWORD_REGEX);
+    }
 
 }
