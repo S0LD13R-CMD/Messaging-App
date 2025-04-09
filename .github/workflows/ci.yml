@@ -2,9 +2,9 @@ name: Messaging App CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
 
 # Set default permissions for all jobs with least privilege
 permissions:

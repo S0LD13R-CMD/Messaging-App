@@ -74,4 +74,4 @@ const PrivateChat: React.FC<PrivateChatProps> = ({
   );
 };
 
-export default PrivateChat; 
+export default PrivateChat;
