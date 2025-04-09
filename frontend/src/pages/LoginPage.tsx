@@ -34,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
     } catch (err) {
       console.error('Login error:', err);
-      let errorMessage = 'Login failed. Please check your credentials.';
+      let errorMessage = 'Login failed. Please check your credentials. Perhaps you have not registered yet?';
       if (axios.isAxiosError(err) && err.response) {
         errorMessage = err.response.data || errorMessage;
       }
