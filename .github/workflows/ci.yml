@@ -49,7 +49,7 @@ jobs:
           summary: true
           
       - name: Upload Backend Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-coverage-report
           path: messaging.app/target/site/jacoco/
@@ -99,7 +99,7 @@ jobs:
           npm test -- --coverage
           
       - name: Upload Frontend Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: frontend-coverage-report
