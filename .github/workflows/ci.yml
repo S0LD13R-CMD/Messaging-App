@@ -48,13 +48,6 @@ jobs:
           fail_on_failure: true
           summary: true
           
-      - name: Upload Backend Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-coverage-report
-          path: messaging.app/target/site/jacoco/
-          retention-days: 7
-          
       - name: Coverage Report Summary
         run: |
           cd messaging.app
@@ -97,14 +90,6 @@ jobs:
         run: |
           cd frontend
           npm test -- --coverage
-          
-      - name: Upload Frontend Coverage Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: frontend-coverage-report
-          path: frontend/coverage/
-          retention-days: 7
           
       - name: Coverage Report Summary
         if: always()
