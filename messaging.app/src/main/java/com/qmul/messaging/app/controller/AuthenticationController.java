@@ -93,6 +93,18 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
+    
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers(HttpSession session) {
+        String currentUser = (String) session.getAttribute("username");
+        return ResponseEntity.ok(
+                usersRepository.findAll().stream()
+                        .filter(u -> !u.getUsername().equalsIgnoreCase(currentUser))
+                        .map(Users::getUsername)
+                        .toList()
+        );
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session) {

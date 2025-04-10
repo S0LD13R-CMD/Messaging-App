@@ -23,4 +23,5 @@ public interface PrivateMessageRepository extends MongoRepository<PrivateMessage
     List<PrivateMessage> findBySenderIdAndReceiverId(String sender_id, String receiver_id);
 
     List<PrivateMessage> findByPrivateChatroomIdAndTimestampBetween(String private_chatroom_id, String startTimestamp, String endTimestamp);
+    List<PrivateMessage> findByPrivateChatroomIdOrderByTimestampAsc(String privateChatroomId);
 }
