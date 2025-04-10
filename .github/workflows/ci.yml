@@ -2,9 +2,9 @@ name: Messaging App CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
 
 # Set default permissions for all jobs with least privilege
 permissions:
@@ -35,10 +35,10 @@ jobs:
           cd messaging.app
           mvn -B package --file pom.xml
 
-      - name: Run tests with coverage
+      - name: Run tests
         run: |
           cd messaging.app
-          mvn test jacoco:report
+          mvn test
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
@@ -48,26 +48,6 @@ jobs:
           fail_on_failure: true
           summary: true
           
-      - name: Upload Backend Coverage Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-coverage-report
-          path: messaging.app/target/site/jacoco/
-          retention-days: 7
-          
-      - name: Coverage Report Summary
-        run: |
-          cd messaging.app
-          echo "# Backend Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
-          echo "## JaCoCo Report" >> $GITHUB_STEP_SUMMARY
-          REPORT_PATH="target/site/jacoco/index.html"
-          if [ -f "$REPORT_PATH" ]; then
-            TOTAL_LINE=$(grep -o 'Total[^%]*%' "$REPORT_PATH" | head -1)
-            echo "- $TOTAL_LINE" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- Coverage report not found" >> $GITHUB_STEP_SUMMARY
-          fi
-
   frontend-build-and-test:
     name: Frontend Build & Test
     runs-on: ubuntu-latest
@@ -99,7 +79,7 @@ jobs:
           npm test -- --coverage
           
       - name: Upload Frontend Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: frontend-coverage-report
