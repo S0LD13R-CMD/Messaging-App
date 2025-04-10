@@ -144,4 +144,25 @@ jobs:
         run: |
           cd messaging.app
           mvn checkstyle:check
-        continue-on-error: true  # Optional: allows the workflow to continue even if checkstyle fails 
+        continue-on-error: true  # Optional: allows the workflow to continue even if checkstyle fails
+
+  deploy-to-raspberry-pi:
+    name: Deploy to Raspberry Pi (Docker)
+    needs: [backend-build-and-test, frontend-build-and-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - name: SSH into Raspberry Pi & Deploy with Docker
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: RASPBERRY_PI_IP        # 🔁 Replace with your Pi's IP
+          username: raufa                 # 🔁 Replace if different
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/raufa/chat-platform
+            git pull origin master
+            docker build -t chat-backend messaging.app
+            docker stop chat-backend || true
+            docker rm chat-backend || true
+            docker run -d --name chat-backend -p 8080:8080 chat-backend

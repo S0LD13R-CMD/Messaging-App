@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./messaging.app
+    container_name: chat-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://abduls-pi:BloodhoundOctane@69@mongodb:27017/chatapp
+    networks:
+      - chatnet
+
+  frontend:
+    build: ./frontend
+    container_name: chat-frontend
+    ports:
+      - "3000:80"
+    networks:
+      - chatnet
+
+  mongodb:
+    image: mongo:6.0
+    container_name: chat-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: abduls-pi
+      MONGO_INITDB_ROOT_PASSWORD: BloodhoundOctane@69
+    networks:
+      - chatnet
+
+volumes:
+  mongo-data:
+
+networks:
+  chatnet:
