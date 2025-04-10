@@ -9,6 +9,7 @@ import PrivateChatPage from './pages/PrivateChatPage'
 import { chatStyles } from './styles/chatStyles'
 import SearchPopup from './components/ui/SearchPopup'
 import ErrorPopup from './components/ui/ErrorPopup'
+import axios from 'axios'
 
 function App() {
   // Authentication and user states
@@ -28,9 +29,18 @@ function App() {
     setIsAuthenticated(true);
   };
   
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUsername('');
+  const logout = async () => {
+    try {
+      await axios.post('http://localhost:8080/authentication/logout', {}, { 
+        withCredentials: true 
+      });
+      console.log('Backend logout successful');
+    } catch (error) {
+      console.error('Backend logout failed:', error); 
+    } finally {
+      setIsAuthenticated(false);
+      setUsername('');
+    }
   };
 
   // Clear notifications when visiting private messages page

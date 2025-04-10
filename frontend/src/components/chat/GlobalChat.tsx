@@ -7,7 +7,6 @@ import Button from '../ui/Button';
 interface GlobalChatProps {
   username: string;
 }
-
 const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -15,7 +14,7 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
   useEffect(() => {
     // Here you would fetch messages from your API
     // Example: fetchGlobalMessages().then(data => setMessages(data));
-    
+
     // For demonstration:
     const demoMessages: Message[] = [
       { id: '1', content: 'Welcome to the global chat!', sender: 'System', timestamp: new Date() }
@@ -26,10 +25,10 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    
+
     // Here you would send the message to your API
     // Example: sendGlobalMessage(newMessage).then(response => {});
-    
+
     // For demonstration:
     const message: Message = {
       id: Date.now().toString(),
@@ -37,7 +36,7 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
       sender: username, // Use the actual username
       timestamp: new Date()
     };
-    
+
     setMessages(prev => [...prev, message]);
     setNewMessage('');
   };
@@ -51,11 +50,10 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
     maxWidth: '20%',
     margin: '10px auto'
   };
-
   return (
     <div className="flex flex-col h-full">
       <div className="text-xl font-bold mb-4"></div>
-      
+
       <div style={chatStyles.messagesArea}>
         {messages.map(message => (
           <div 
@@ -105,5 +103,4 @@ const GlobalChat: React.FC<GlobalChatProps> = ({ username }) => {
     </div>
   );
 };
-
-export default GlobalChat; 
+export default GlobalChat;
