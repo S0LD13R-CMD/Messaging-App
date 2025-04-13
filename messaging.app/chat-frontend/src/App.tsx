@@ -18,9 +18,6 @@ const App = () => {
         return <div>Loading session...</div>;
     }
 
-    // Uncomment to force the login page to show for testing
-    // if (window.location.pathname === '/') return <Navigate to="/login" replace />;
-
     return (
         <div>
             {loggedIn && <Navbar onLogout={() => setLoggedIn(false)} />}
