@@ -14,10 +14,23 @@ const PrivateChat = () => {
     const clientRef = useRef<Client | null>(null);
 
     useEffect(() => {
-        if (!receiverId || !senderId) return;
+        console.log('[PrivateChat] useEffect running. senderId:', senderId, 'receiverId:', receiverId);
+        if (!receiverId || !senderId) {
+            console.log('[PrivateChat] Missing senderId or receiverId, skipping WebSocket connection.');
+            // Ensure client is deactivated if senderId/receiverId becomes null
+            if (clientRef.current?.active) {
+                console.log('[PrivateChat] Deactivating existing client due to missing IDs.');
+                clientRef.current.deactivate();
+                clientRef.current = null;
+            }
+            return;
+        }
 
         const connectWebSocketAndLoadMessages = async () => {
+            console.log('[PrivateChat] Attempting to load messages and connect WebSocket.');
             try {
+                // Fetch existing messages first
+                console.log('[PrivateChat] Fetching private messages.');
                 const res = await api.get(`/messages/private`);
                 const filtered = res.data.filter(
                     (msg: any) =>
@@ -25,24 +38,37 @@ const PrivateChat = () => {
                         (msg.senderId === receiverId && msg.receiverId === senderId)
                 );
                 setMessages(filtered);
+                console.log('[PrivateChat] Private messages loaded:', filtered.length);
             } catch (err) {
-                console.error("Failed to load private messages", err);
+                console.error("[PrivateChat] Failed to load private messages", err);
             }
 
+            // Setup WebSocket connection
+            console.log('[PrivateChat] Setting up WebSocket connection.');
             const socket = new SockJS('http://localhost:8080/ws');
             const client = new Client({
                 webSocketFactory: () => socket,
-                debug: str => console.log(str),
+                debug: str => console.log('[PrivateChat STOMP]', str),
                 onConnect: () => {
+                    console.log('[PrivateChat] WebSocket connected.');
                     client.subscribe('/user/queue/private', (message: IMessage) => {
                         const body = JSON.parse(message.body);
+                        console.log('[PrivateChat] Received message:', body);
+                        // Ensure message is for the current chat
                         if (body.senderId === receiverId || body.receiverId === receiverId) {
                             setMessages(prev => [...prev, body]);
                         }
                     });
+                },
+                onStompError: (frame) => {
+                    console.error('[PrivateChat] STOMP Error:', frame);
+                },
+                onWebSocketError: (event) => {
+                    console.error('[PrivateChat] WebSocket Error:', event);
                 }
             });
 
+            console.log('[PrivateChat] Activating STOMP client.');
             client.activate();
             clientRef.current = client;
         };
@@ -50,12 +76,15 @@ const PrivateChat = () => {
         connectWebSocketAndLoadMessages();
 
         return () => {
+            console.log('[PrivateChat] Cleanup: Deactivating STOMP client.');
             clientRef.current?.deactivate();
+            clientRef.current = null;
         };
-    }, [receiverId, senderId]);
+    }, [receiverId, senderId]); // Dependency array includes both IDs
 
     const sendMessage = () => {
-        if (clientRef.current && input && senderId && receiverId) {
+        console.log('[PrivateChat] Trying to send message. senderId:', senderId, 'receiverId:', receiverId, 'Input:', input, 'Client active:', clientRef.current?.active);
+        if (clientRef.current?.active && input && senderId && receiverId) {
             clientRef.current.publish({
                 destination: '/app/private',
                 body: JSON.stringify({
@@ -66,6 +95,9 @@ const PrivateChat = () => {
                 })
             });
             setInput('');
+            console.log('[PrivateChat] Message sent.');
+        } else {
+            console.log('[PrivateChat] Message not sent. Conditions not met.');
         }
     };
 
