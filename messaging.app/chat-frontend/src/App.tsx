@@ -23,7 +23,7 @@ const App = () => {
             })
             .catch(() => setLoggedIn(false))
             .finally(() => setLoading(false));
-    }, []);
+    }, [setLoggedIn]);
 
     if (loading) return <div>Loading session...</div>;
 
