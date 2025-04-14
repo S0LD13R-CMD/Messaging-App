@@ -7,12 +7,12 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
 
     const handleLogin = async () => {
         try {
-            await api.post(
-                '/authentication/login',
-                { username, password },
-                { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-            );
+            await api.post('/authentication/login', { username, password }, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            });
             onLogin();
+            window.location.reload();
         } catch (err) {
             alert('Login failed');
         }
@@ -24,6 +24,7 @@ const Login = ({ onLogin }: { onLogin: () => void }) => {
             <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" />
             <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Password" />
             <button onClick={handleLogin}>Login</button>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
     );
 };
