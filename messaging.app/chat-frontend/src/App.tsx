@@ -30,8 +30,8 @@ const App = () => {
                     : <Navigate to="/chat" replace />
                 } />
                 <Route path="/register" element={
-                    !loggedIn 
-                    ? <Register onRegister={() => setLoggedIn(true)} /> 
+                    !loggedIn
+                        ? <Register />
                     : <Navigate to="/chat" replace />
                 } />
                 <Route path="/chat" element={
