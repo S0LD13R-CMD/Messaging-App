@@ -7,7 +7,7 @@ type AuthContextType = {
     loading: boolean;
     setLoggedIn: (status: boolean) => void;
     setUsername: (name: string | null) => void;
-    forceLogout: () => void;
+    logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,14 +19,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     console.log('AuthProvider initialized with', { loggedIn, loading });
 
-    const forceLogout = () => {
-        console.log('Force logout called');
-        setLoggedIn(false);
-        setUsername(null);
+    const logout = async () => {
+        console.log('Logout called');
         try {
-            api.post('/authentication/logout').catch(err => console.log('Logout error:', err));
+            await api.post('/authentication/logout');
+            console.log('Logout API call successful');
         } catch (err) {
-            console.error('Error during forced logout:', err);
+            console.error('Logout API call error:', err);
+            // Decide if we should still log out client-side even if API fails
+        } finally {
+             // Always update client-side state regardless of API success/failure for immediate UI feedback
+            setLoggedIn(false);
+            setUsername(null);
+            // Navigation should happen where logout is called (e.g., in the header button's onClick)
+            // Or potentially here if it should always redirect
+             console.log('Client-side state updated for logout.');
         }
     };
 
@@ -63,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('AuthProvider current state:', { loggedIn, username, loading });
 
     return (
-        <AuthContext.Provider value={{ loggedIn, username, loading, setLoggedIn, setUsername, forceLogout }}>
+        <AuthContext.Provider value={{ loggedIn, username, loading, setLoggedIn, setUsername, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -4,7 +4,6 @@ import Login from './components/Login';
 import Register from './components/Register';
 import GlobalChat from './components/GlobalChat';
 import PrivateChat from './components/PrivateChat';
-import Navbar from './components/Navbar';
 import { useAuth } from './context/AuthContext';
 import UserList from "./components/UserList";
 import WebSocketEchoTester from "./components/WebSocketEchoTester";
@@ -15,12 +14,11 @@ const App = () => {
     console.log("App component - Auth state:", { loggedIn, loading });
 
     if (loading) {
-        return <div>Loading session...</div>;
+        return <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading session...</div>;
     }
 
     return (
-        <div>
-            {loggedIn && <Navbar onLogout={() => setLoggedIn(false)} />}
+        <div style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
             <Routes>
                 {/* Force login page for all initial requests */}
                 <Route path="/" element={<Navigate to="/login" replace />} />

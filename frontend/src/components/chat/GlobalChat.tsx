@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Message } from '../../types/messageTypes';
 import { chatStyles } from '../../styles/chatStyles';
-import '../../styles/buttonAnimations.css';
 import Button from '../ui/Button';
 
 interface GlobalChatProps {
