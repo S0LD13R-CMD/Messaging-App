@@ -16,7 +16,7 @@ permissions:
 jobs:
   backend-build-and-test:
     name: Backend Build & Test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
@@ -49,7 +49,7 @@ jobs:
           
   frontend-build-and-test:
     name: Frontend Build & Test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
