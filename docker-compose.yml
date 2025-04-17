@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: chat-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend-service
+      - backend-service
+    networks:
+      - chatnet
+
+  backend-service:
+    build: ./messaging.app
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://abduls-pi:BloodhoundOctane@69@chat-mongodb:27017/chatapp
+    networks:
+      - chatnet
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  frontend-service:
+    build: ./messaging.app-frontend
+    networks:
+      - chatnet
+    deploy:
+      replicas: 1
+
+  mongodb:
+    image: mongo:6.0
+    container_name: chat-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: abduls-pi
+      MONGO_INITDB_ROOT_PASSWORD: BloodhoundOctane@69
+    networks:
+      - chatnet
+
+volumes:
+  mongo-data:
+
+networks:
+  chatnet:
