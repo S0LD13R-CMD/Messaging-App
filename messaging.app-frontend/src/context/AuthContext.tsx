@@ -1,22 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api/auth';
-
-// Export the type
-export type AuthContextType = {
-    loggedIn: boolean;
-    username: string | null;
-    loading: boolean;
-    loginLoading: boolean;
-    loginError: string | null;
-    setLoggedIn: (status: boolean) => void;
-    setUsername: (name: string | null) => void;
-    logout: () => Promise<void>;
-    login: (user: string, pass: string) => Promise<void>;
-    clearLoginError: () => void;
-};
-
-// Export the context
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Import the context from the definition file
+import { AuthContext, AuthContextType } from './authContextDefinition'; 
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -111,6 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('AuthProvider current state:', { loggedIn, username, loading });
 
     return (
+        // Use the imported AuthContext
         <AuthContext.Provider value={{
             loggedIn, username, loading,
             loginLoading, loginError,
