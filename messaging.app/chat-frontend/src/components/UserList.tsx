@@ -21,32 +21,44 @@ const userListStyles = {
     searchInput: {
         width: '100%',
         padding: '8px 16px',
-        backgroundColor: '#3a3a3a',
+        backgroundColor: 'transparent',
         border: '1px solid #666666',
         borderRadius: '12px',
         color: 'white',
         outline: 'none',
-        marginBottom: '20px', // Space below input
+        marginBottom: '20px',
         boxSizing: 'border-box' as const,
+        fontFamily: 'inherit',
     },
     list: {
-        listStyle: 'none', // Remove default bullets
+        listStyle: 'none',
         padding: 0,
         margin: 0,
+        columnCount: 3,
+        columnGap: '20px',
+        height: '100%',
+        overflowY: 'auto' as const,
+        flexGrow: 1,
     },
     listItem: {
-        padding: '10px 0',
+        padding: '8px 0',
         borderBottom: '1px solid #444444',
+        breakInside: 'avoid' as const,
     },
     link: {
         color: '#FFFFFF',
         textDecoration: 'none',
-        fontSize: '1.1rem',
-        display: 'block', // Make link take full width
+        fontSize: '1.0rem',
+        display: 'block',
         transition: 'color 0.2s ease',
     },
     linkHover: {
-        color: '#BB86FC', // Highlight color on hover
+        color: '#BB86FC',
+    },
+    noUsersText: {
+        color: '#aaaaaa',
+        padding: '10px 0',
+        textAlign: 'center' as const,
     }
 };
 
@@ -88,7 +100,7 @@ const UserList = () => {
                         onChange={e => setSearch(e.target.value)}
                         style={userListStyles.searchInput}
                     />
-                    <ul style={{...userListStyles.list, overflowY: 'auto', flexGrow: 1 /* Ensure list can grow */ }}>
+                    <ul style={userListStyles.list}>
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((username: string) => (
                                 <li key={username} style={userListStyles.listItem}>
@@ -106,7 +118,7 @@ const UserList = () => {
                                 </li>
                             ))
                         ) : (
-                            <li style={{ ...userListStyles.listItem, color: '#aaaaaa' }}>No users found.</li>
+                            <li style={userListStyles.noUsersText}>No users found.</li>
                         )}
                     </ul>
                 </div>
