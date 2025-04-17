@@ -8,7 +8,7 @@ import Header from './Header';
 
 const chatStyles = {
   containerStyle2: {
-    border: '2px solid #FFFFFF',
+    border: '2px solid #666666',
     borderRadius: '24px',
     overflow: 'hidden',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.5)',
@@ -40,13 +40,15 @@ const chatStyles = {
   sendButton: {
     backgroundColor: 'transparent',
     color: '#BB86FC',
-    border: '2px solid #BB86FC',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#666666',
     padding: '8px 16px',
     borderRadius: '12px',
     cursor: 'pointer',
     fontFamily: 'inherit',
     fontWeight: 'bold',
-    transition: 'background-color 0.2s ease, color 0.2s ease',
+    transition: 'background-color 0.2s ease, border-color 0.2s ease',
   },
   sendButtonHover: {
     backgroundColor: 'rgba(187, 134, 252, 0.1)',
@@ -66,19 +68,19 @@ const chatStyles = {
   sentMessage: {
     marginLeft: 'auto',
     backgroundColor: 'transparent',
-    border: '1px solid #FFFFFF',
+    border: '1px solid #666666',
     color: '#FFFFFF',
     alignSelf: 'flex-end',
   },
   receivedMessage: {
     marginRight: 'auto',
     backgroundColor: 'transparent',
-    border: '1px solid #03DAC6',
+    border: '1px solid #666666',
     color: '#FFFFFF',
     alignSelf: 'flex-start',
   },
   messagesArea: {
-    height: 'calc(100% - 50px)',
+    flexGrow: 1,
     overflowY: 'auto' as const,
     padding: '16px',
     display: 'flex',
@@ -126,7 +128,7 @@ const backButtonStyle = {
     color: '#FFFFFF',
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderColor: '#666666',
     borderRadius: '24px 0 0 24px',
     cursor: 'pointer',
     padding: '0 15px',
@@ -287,7 +289,15 @@ const PrivateChat = () => {
         <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
              <Header title={`Chat with ${receiverId}`} />
 
-             <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', flexGrow: 1, padding: '0 10px', display: 'flex', alignItems: 'stretch' }}>
+             <div style={{ 
+                 maxWidth: '1280px', 
+                 width: '95%', 
+                 margin: '20px auto', 
+                 flexGrow: 1, 
+                 padding: '0 10px', 
+                 display: 'flex', 
+                 alignItems: 'stretch'
+             }}>
                 <button
                     onClick={handleGoBack}
                     style={{
@@ -301,7 +311,7 @@ const PrivateChat = () => {
                     ❮
                 </button>
 
-                <div style={{...chatStyles.containerStyle2, flexGrow: 1, height: 'calc(100vh - 120px)' }}>
+                <div style={{...chatStyles.containerStyle2, flexGrow: 1 }}>
                      <div style={chatStyles.messagesArea}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>

@@ -6,7 +6,7 @@ import Header from './Header';
 
 const chatStyles = {
   containerStyle1: {
-    border: '2px solid #FFFFFF',
+    border: '2px solid #666666',
     borderRadius: '24px',
     overflow: 'hidden',
     boxShadow: '0 4px 6px rgb(30, 30, 30)',
@@ -14,6 +14,7 @@ const chatStyles = {
     flexDirection: 'column' as const,
     backgroundColor: 'transparent',
     width: '100%',
+    flexGrow: 1,
   },
   inputContainer: {
     display: 'flex',
@@ -37,14 +38,15 @@ const chatStyles = {
   sendButton: {
     backgroundColor: 'transparent',
     color: '#BB86FC',
-    border: '2px solid #BB86FC',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#666666',
     padding: '8px 16px',
     borderRadius: '12px',
     cursor: 'pointer',
-    marginLeft: '10px',
     fontFamily: 'inherit',
     fontWeight: 'bold',
-    transition: 'background-color 0.2s ease, color 0.2s ease',
+    transition: 'background-color 0.2s ease, border-color 0.2s ease',
   },
   sendButtonHover: {
     backgroundColor: 'rgba(187, 134, 252, 0.1)',
@@ -64,14 +66,14 @@ const chatStyles = {
   sentMessage: {
     marginLeft: 'auto',
     backgroundColor: 'transparent',
-    border: '1px solid #FFFFFF',
+    border: '1px solid #666666',
     color: '#FFFFFF',
     alignSelf: 'flex-end',
   },
   receivedMessage: {
     marginRight: 'auto',
     backgroundColor: 'transparent',
-    border: '1px solid #03DAC6',
+    border: '1px solid #666666',
     color: '#FFFFFF',
     alignSelf: 'flex-start',
   },
@@ -80,13 +82,13 @@ const chatStyles = {
     maxWidth: '60%',
     margin: '10px auto',
     backgroundColor: 'transparent',
-    border: '1px solid #BB86FC',
+    border: '1px solid #666666',
     color: '#BB86FC',
     padding: '4px 8px',
     borderRadius: '12px',
   },
   messagesArea: {
-    height: 'calc(100% - 50px)',
+    flexGrow: 1,
     overflowY: 'auto' as const,
     padding: '16px',
     display: 'flex',
@@ -230,8 +232,8 @@ const GlobalChat = () => {
         <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Header title="Global Chat" />
 
-            <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', padding: '0 10px' }}>
-                 <div style={{...chatStyles.containerStyle1, height: 'calc(100vh - 120px)' }}>
+            <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', padding: '0 10px', flexGrow: 1, display: 'flex' }}>
+                 <div style={chatStyles.containerStyle1}>
                      <div style={chatStyles.messagesArea}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>

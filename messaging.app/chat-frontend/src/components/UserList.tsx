@@ -6,7 +6,7 @@ import Header from './Header'; // Import the Header
 // Basic styles similar to chat components
 const userListStyles = {
     container: {
-        border: '2px solid #FFFFFF',
+        border: '2px solid #666666',
         borderRadius: '24px',
         overflowY: 'auto' as const,
         backgroundColor: 'transparent',
@@ -42,7 +42,7 @@ const userListStyles = {
     },
     listItem: {
         padding: '8px 0',
-        borderBottom: '1px solid #444444',
+        borderBottom: '1px solid #666666',
         breakInside: 'avoid' as const,
     },
     link: {
