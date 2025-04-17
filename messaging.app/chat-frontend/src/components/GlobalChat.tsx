@@ -7,31 +7,32 @@ import Header from './Header';
 // Styles copied and adapted from frontend/src/styles/chatStyles.ts
 const chatStyles = {
   containerStyle1: {
-    border: '2px solid #FFFFFF', // Changed border to white
+    border: '2px solid #FFFFFF', // Keep thick white border
     borderRadius: '24px',
     overflow: 'hidden',
-    boxShadow: '0 4px 6px rgb(30, 30, 30)', // Kept shadow
+    boxShadow: '0 4px 6px rgb(30, 30, 30)', // Keep shadow for definition
     display: 'flex',
     flexDirection: 'column' as const,
-    backgroundColor: '#1a1a1a', // Dark background for chat container, not pure black for contrast
-    width: '100%', // Ensure it takes full width of parent
-    flexGrow: 1, // Make this container grow within its parent
+    backgroundColor: 'transparent', // Set background to transparent
+    width: '100%',
+    flexGrow: 1,
   },
   inputContainer: {
     display: 'flex',
-    padding: '16px',
-    backgroundColor: '#2a2a2a', // Darker background for input area
+    padding: '10px',
+    backgroundColor: 'transparent',
     marginTop: 'auto',
   },
   input: {
     flexGrow: 1,
     padding: '8px 16px',
-    backgroundColor: '#3a3a3a', // Dark input background
-    border: '2px solid #555555', // Adjusted border
+    backgroundColor: 'transparent', // Set background to transparent
+    border: '1px solid #666666', // Keep a subtle grey border
     borderRadius: '12px',
-    color: 'white', // White text
+    color: 'white',
     outline: 'none',
     marginRight: '8px',
+    fontFamily: 'inherit',
   },
   sendButton: {
     backgroundColor: '#BB86FC', // Adjusted button color for dark theme (example: Material Purple)
@@ -41,6 +42,7 @@ const chatStyles = {
     borderRadius: '12px',
     cursor: 'pointer',
     marginLeft: '10px',
+    fontFamily: 'inherit',
   },
   messageContainer: {
     padding: '8px 12px',
@@ -117,14 +119,16 @@ const chatStyles = {
 const GlobalChat = () => {
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState('');
+    const [isWsConnected, setIsWsConnected] = useState(false);
     const clientRef = useRef<Client | null>(null);
-    const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref for scrolling
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const { username: senderId } = useAuth();
 
     useEffect(() => {
         console.log('[GlobalChat] useEffect running. senderId:', senderId);
         if (!senderId) {
             console.log('[GlobalChat] No senderId, skipping WebSocket connection.');
+            setIsWsConnected(false);
             if (clientRef.current?.active) {
                 console.log('[GlobalChat] Deactivating existing client due to missing senderId.');
                 clientRef.current.deactivate();
@@ -143,14 +147,29 @@ const GlobalChat = () => {
             debug: str => console.log('[GlobalChat STOMP]', str),
             onConnect: () => {
                 console.log('[GlobalChat] WebSocket connected.');
+                setIsWsConnected(true);
                 client.subscribe('/topic/global', (message: IMessage) => {
                     const body = JSON.parse(message.body);
                     // Add message and sort
                     setMessages(prev => [...prev, body].sort((a, b) => Number(a.timestamp) - Number(b.timestamp)));
                 });
             },
-            onStompError: (frame) => { console.error('[GlobalChat] STOMP Error:', frame); },
-            onWebSocketError: (event) => { console.error('[GlobalChat] WebSocket Error:', event); }
+            onDisconnect: () => {
+                console.log('[GlobalChat] WebSocket disconnected.');
+                setIsWsConnected(false);
+            },
+            onStompError: (frame) => {
+                console.error('[GlobalChat] STOMP Error:', frame);
+                setIsWsConnected(false);
+            },
+            onWebSocketError: (event) => {
+                console.error('[GlobalChat] WebSocket Error:', event);
+                setIsWsConnected(false);
+            },
+            onWebSocketClose: (event) => {
+                 console.log('[GlobalChat] WebSocket closed.', event);
+                 setIsWsConnected(false);
+             }
         });
 
         console.log('[GlobalChat] Activating STOMP client.');
@@ -159,6 +178,7 @@ const GlobalChat = () => {
 
         return () => {
             console.log('[GlobalChat] Cleanup: Deactivating STOMP client.');
+            setIsWsConnected(false);
             clientRef.current?.deactivate();
             clientRef.current = null;
         };
@@ -182,8 +202,8 @@ const GlobalChat = () => {
 
     const handleSendMessage = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-        console.log('[GlobalChat] Trying to send message. senderId:', senderId, 'Input:', input, 'Client active:', clientRef.current?.active);
-        if (clientRef.current?.active && input.trim() && senderId) {
+        console.log('[GlobalChat] Trying to send message. isWsConnected:', isWsConnected, 'senderId:', senderId, 'Input:', input);
+        if (isWsConnected && clientRef.current?.active && input.trim() && senderId) {
             clientRef.current.publish({
                 destination: '/app/global',
                 body: JSON.stringify({ content: input.trim(), senderId, timestamp: Date.now().toString() })
@@ -191,7 +211,7 @@ const GlobalChat = () => {
             setInput('');
             console.log('[GlobalChat] Message published.');
         } else {
-            console.log('[GlobalChat] Message not sent. Conditions not met.');
+            console.log('[GlobalChat] Message not sent. Conditions not met (Connected:', isWsConnected, 'Active:', clientRef.current?.active, 'Input:', !!input.trim(), 'SenderId:', !!senderId, ')');
         }
     };
 
@@ -250,9 +270,11 @@ const GlobalChat = () => {
                             type="submit"
                             style={chatStyles.sendButton}
                             className="btn-slide"
+                            disabled={!isWsConnected}
                         >
                             Yap
                         </button>
+                        {!isWsConnected && <span style={{ marginLeft: '10px', color: '#aaaaaa', fontSize: '0.8rem', alignSelf: 'center' }}>Connecting...</span>}
                      </form>
                 </div>
              </div>

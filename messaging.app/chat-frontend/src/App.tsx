@@ -9,7 +9,7 @@ import UserList from "./components/UserList";
 import WebSocketEchoTester from "./components/WebSocketEchoTester";
 
 const App = () => {
-    const { loggedIn, setLoggedIn, loading } = useAuth();
+    const { loggedIn, loading } = useAuth();
     
     console.log("App component - Auth state:", { loggedIn, loading });
 
@@ -24,7 +24,7 @@ const App = () => {
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={
                     !loggedIn 
-                    ? <Login onLogin={() => setLoggedIn(true)} /> 
+                    ? <Login /> 
                     : <Navigate to="/chat" replace />
                 } />
                 <Route path="/register" element={

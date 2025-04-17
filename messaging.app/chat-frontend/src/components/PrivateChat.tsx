@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import api from '../api/auth';
@@ -11,39 +11,40 @@ const chatStyles = {
   containerStyle2: {
     border: '2px solid #FFFFFF',
     borderRadius: '24px',
-    // Remove explicit height
     overflow: 'hidden',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.5)',
     display: 'flex',
     flexDirection: 'column' as const,
-    backgroundColor: '#1a1a1a', // Dark grey background
+    backgroundColor: 'transparent',
     color: '#FFFFFF',
-    width: '100%', // Ensure it takes full width of parent
-    flexGrow: 1, // Make this container grow
+    width: '100%',
+    flexGrow: 1,
   },
   inputContainer: {
     display: 'flex',
-    padding: '16px',
-    backgroundColor: '#1a1a1a', // Dark background for input area
+    padding: '10px',
+    backgroundColor: 'transparent',
     marginTop: 'auto',
   },
   input: {
     flexGrow: 1,
     padding: '8px 16px',
-    backgroundColor: '#3a3a3a', // Dark input background
-    border: '2px solid #555555',
+    backgroundColor: 'transparent',
+    border: '1px solid #666666',
     borderRadius: '12px',
     color: 'white',
     outline: 'none',
     marginRight: '8px',
+    fontFamily: 'inherit',
   },
   sendButton: {
-    backgroundColor: '#BB86FC', // Example purple button
+    backgroundColor: '#BB86FC',
     color: 'black',
     border: 'none',
     padding: '10px 24px',
     borderRadius: '8px',
     cursor: 'pointer',
+    fontFamily: 'inherit',
   },
   messageContainer: {
     padding: '8px 12px',
@@ -54,24 +55,20 @@ const chatStyles = {
     minWidth: '80px',
     wordWrap: 'break-word' as const,
     color: '#FFFFFF',
-    // Border is now defined in sent/received
-    // backgroundColor is now defined in sent/received
   },
   sentMessage: {
     marginLeft: 'auto',
-    backgroundColor: 'transparent', // Changed background
-    border: '1px solid #FFFFFF', // White border
-    color: '#FFFFFF', // White text
+    backgroundColor: 'transparent',
+    border: '1px solid #FFFFFF',
+    color: '#FFFFFF',
     alignSelf: 'flex-end',
-    // Inherit padding, margin, etc. from messageContainer
   },
   receivedMessage: {
     marginRight: 'auto',
-    backgroundColor: 'transparent', // Changed background
-    border: '1px solid #03DAC6', // Teal/Blue border
-    color: '#FFFFFF', // White text
+    backgroundColor: 'transparent',
+    border: '1px solid #03DAC6',
+    color: '#FFFFFF',
     alignSelf: 'flex-start',
-    // Inherit padding, margin, etc. from messageContainer
   },
   messagesArea: {
     flexGrow: 1,
@@ -79,11 +76,11 @@ const chatStyles = {
     padding: '16px',
     display: 'flex',
     flexDirection: 'column' as const,
-    color: 'white' // Ensure default text color
+    color: 'white'
   },
   messageTime: {
     fontSize: '0.7rem',
-    color: '#aaaaaa', // Lighter grey
+    color: '#aaaaaa',
     marginTop: '4px',
     textAlign: 'right' as const,
   },
@@ -91,7 +88,7 @@ const chatStyles = {
       fontWeight: 'bold',
       fontSize: '0.8rem',
       marginBottom: '2px',
-      color: '#BB86FC', // Accent color for sender name
+      color: '#BB86FC',
   },
   messageContent: {
     fontSize: '0.9rem',
@@ -99,35 +96,62 @@ const chatStyles = {
   dateHeader: {
       textAlign: 'center' as const,
       margin: '16px 0 8px 0',
-      color: '#aaaaaa', // Lighter grey
+      color: '#aaaaaa',
       fontWeight: 'bold',
       fontSize: '0.8rem',
   },
-  // Style for the chat header within the container
   chatHeader: {
-      backgroundColor: '#1f1f1f', // Dark header background
-      color: '#FFFFFF', // White text
+      backgroundColor: '#1f1f1f',
+      color: '#FFFFFF',
       padding: '10px 16px',
       fontSize: '1.1rem',
       fontWeight: 'semibold',
       borderBottom: '1px solid #333333'
   }
 };
-// End of copied styles
+
+const backButtonStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#FFFFFF',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderRadius: '24px 0 0 24px',
+    cursor: 'pointer',
+    padding: '0 15px',
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    marginRight: '10px',
+    transition: 'background-color 0.2s ease, border-color 0.2s ease',
+    height: 'calc(100vh - 120px)',
+    writingMode: 'vertical-rl' as const,
+    textOrientation: 'mixed' as const,
+};
+
+const backButtonHoverStyle = {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.7)',
+};
 
 const PrivateChat = () => {
     const { receiverId } = useParams<{ receiverId: string }>();
     const { username: senderId } = useAuth();
-
+    const navigate = useNavigate();
     const [messages, setMessages] = useState<any[]>([]);
     const [input, setInput] = useState('');
     const clientRef = useRef<Client | null>(null);
-    const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref for scrolling
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const [isBackHover, setIsBackHover] = useState(false);
+    const [isWsConnected, setIsWsConnected] = useState(false);
 
     useEffect(() => {
         console.log('[PrivateChat] useEffect running. senderId:', senderId, 'receiverId:', receiverId);
         if (!receiverId || !senderId) {
             console.log('[PrivateChat] Missing senderId or receiverId, skipping WebSocket connection.');
+            setIsWsConnected(false);
             if (clientRef.current?.active) {
                 console.log('[PrivateChat] Deactivating existing client due to missing IDs.');
                 clientRef.current.deactivate();
@@ -138,6 +162,7 @@ const PrivateChat = () => {
 
         const connectWebSocketAndLoadMessages = async () => {
             console.log('[PrivateChat] Attempting to load messages and connect WebSocket.');
+            setIsWsConnected(false);
             try {
                 console.log('[PrivateChat] Fetching private messages.');
                 const res = await api.get(`/messages/private`);
@@ -159,6 +184,7 @@ const PrivateChat = () => {
                 debug: str => console.log('[PrivateChat STOMP]', str),
                 onConnect: () => {
                     console.log('[PrivateChat] WebSocket connected.');
+                    setIsWsConnected(true);
                     client.subscribe('/user/queue/private', (message: IMessage) => {
                         const body = JSON.parse(message.body);
                         console.log('[PrivateChat] Received message:', body);
@@ -167,12 +193,22 @@ const PrivateChat = () => {
                         }
                     });
                 },
+                onDisconnect: () => {
+                    console.log('[PrivateChat] WebSocket disconnected.');
+                    setIsWsConnected(false);
+                },
                 onStompError: (frame) => {
                     console.error('[PrivateChat] STOMP Error:', frame);
+                    setIsWsConnected(false);
                 },
                 onWebSocketError: (event) => {
                     console.error('[PrivateChat] WebSocket Error:', event);
-                }
+                    setIsWsConnected(false);
+                },
+                onWebSocketClose: (event) => {
+                     console.log('[PrivateChat] WebSocket closed.', event);
+                     setIsWsConnected(false);
+                 }
             });
 
             console.log('[PrivateChat] Activating STOMP client.');
@@ -184,6 +220,7 @@ const PrivateChat = () => {
 
         return () => {
             console.log('[PrivateChat] Cleanup: Deactivating STOMP client.');
+            setIsWsConnected(false);
             clientRef.current?.deactivate();
             clientRef.current = null;
         };
@@ -201,7 +238,6 @@ const PrivateChat = () => {
     const getDateHeader = (timestamp: string | number): string => {
          if (!timestamp) return '';
          return new Date(Number(timestamp)).toLocaleDateString(undefined, {
-             //weekday: 'long', // Keep it simple maybe
              year: 'numeric',
              month: 'long',
              day: 'numeric',
@@ -210,8 +246,8 @@ const PrivateChat = () => {
 
     const handleSendMessage = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-        console.log('[PrivateChat] Trying to send message. senderId:', senderId, 'receiverId:', receiverId, 'Input:', input, 'Client active:', clientRef.current?.active);
-        if (clientRef.current?.active && input.trim() && senderId && receiverId) {
+        console.log('[PrivateChat] Trying to send message. isWsConnected:', isWsConnected, 'senderId:', senderId, 'receiverId:', receiverId, 'Input:', input);
+        if (isWsConnected && clientRef.current?.active && input.trim() && senderId && receiverId) {
             clientRef.current.publish({
                 destination: '/app/private',
                 body: JSON.stringify({
@@ -224,8 +260,12 @@ const PrivateChat = () => {
             setInput('');
             console.log('[PrivateChat] Message published.');
         } else {
-            console.log('[PrivateChat] Message not sent. Conditions not met.');
+            console.log('[PrivateChat] Message not sent. Conditions not met (Connected:', isWsConnected, 'Active:', clientRef.current?.active, 'Input:', !!input.trim(), 'SenderId:', !!senderId, 'ReceiverId:', !!receiverId, ')');
         }
+    };
+
+    const handleGoBack = () => {
+        navigate('/users');
     };
 
     const groupedMessages = messages.reduce((acc: { [key: string]: any[] }, msg: any) => {
@@ -236,15 +276,24 @@ const PrivateChat = () => {
     }, {});
 
     return (
-        // Outer wrapper with flex column
         <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
              <Header title={`Chat with ${receiverId}`} />
 
-             {/* Centering div: Add flexGrow: 1 and display: flex */}
-             <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', flexGrow: 1 /* Let this grow */, padding: '0 10px', display: 'flex' /* Needed for child flexGrow */ }}>
-                {/* Chat container: remove explicit height, add flexGrow: 1 */}
-                <div style={{...chatStyles.containerStyle2 /* height removed, flexGrow added */ }}>
-                     {/* Messages Area */}
+             <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', flexGrow: 1, padding: '0 10px', display: 'flex' }}>
+                <button
+                    onClick={handleGoBack}
+                    style={{
+                        ...backButtonStyle,
+                        ...(isBackHover ? backButtonHoverStyle : {})
+                    }}
+                    onMouseEnter={() => setIsBackHover(true)}
+                    onMouseLeave={() => setIsBackHover(false)}
+                    title="Back to User List"
+                >
+                    ❮
+                </button>
+
+                <div style={{...chatStyles.containerStyle2, flexGrow: 1, height: 'auto' }}>
                      <div style={chatStyles.messagesArea}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
@@ -269,7 +318,6 @@ const PrivateChat = () => {
                          <div ref={messagesEndRef} />
                      </div>
 
-                     {/* Input Area */}
                      <form onSubmit={handleSendMessage} style={chatStyles.inputContainer}>
                         <input
                             type="text"
@@ -282,9 +330,11 @@ const PrivateChat = () => {
                             type="submit"
                             style={chatStyles.sendButton}
                             className="btn-slide"
+                            disabled={!isWsConnected}
                         >
                             Send
                         </button>
+                        {!isWsConnected && <span style={{ marginLeft: '10px', color: '#aaaaaa', fontSize: '0.8rem', alignSelf: 'center' }}>Connecting...</span>}
                      </form>
                 </div>
             </div>

@@ -8,18 +8,21 @@ const userListStyles = {
     container: {
         border: '2px solid #FFFFFF',
         borderRadius: '24px',
-        height: 'calc(100vh - 120px)', // Match calculated height
-        overflowY: 'auto' as const, // Allow scrolling for long lists
-        backgroundColor: '#1a1a1a',
+        overflowY: 'auto' as const,
+        backgroundColor: 'transparent',
         width: '100%',
-        padding: '20px', // Add internal padding
+        padding: '20px',
         color: '#FFFFFF',
+        boxShadow: '0 4px 6px rgb(30, 30, 30)',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        flexGrow: 1,
     },
     searchInput: {
         width: '100%',
         padding: '8px 16px',
         backgroundColor: '#3a3a3a',
-        border: '2px solid #555555',
+        border: '1px solid #666666',
         borderRadius: '12px',
         color: 'white',
         outline: 'none',
@@ -33,7 +36,7 @@ const userListStyles = {
     },
     listItem: {
         padding: '10px 0',
-        borderBottom: '1px solid #333333', // Separator lines
+        borderBottom: '1px solid #444444',
     },
     link: {
         color: '#FFFFFF',
@@ -70,22 +73,22 @@ const UserList = () => {
     );
 
     return (
-        // Apply standard outer wrapper
-        <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh' }}>
+        // Outer wrapper
+        <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Header title="Users" />
 
-            {/* Centering div */}
-            <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', padding: '0 10px' }}>
-                {/* Styled container */}
+            {/* Centering div - ADD flexGrow: 1 and display: flex */}
+            <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', padding: '0 10px', flexGrow: 1, display: 'flex' }}>
+                {/* Styled container - Uses flexGrow now */}
                 <div style={userListStyles.container}>
                     <input
-                        type="text" // Ensure type is text
+                        type="text"
                         placeholder="Search users..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         style={userListStyles.searchInput}
                     />
-                    <ul style={userListStyles.list}>
+                    <ul style={{...userListStyles.list, overflowY: 'auto', flexGrow: 1 /* Ensure list can grow */ }}>
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((username: string) => (
                                 <li key={username} style={userListStyles.listItem}>

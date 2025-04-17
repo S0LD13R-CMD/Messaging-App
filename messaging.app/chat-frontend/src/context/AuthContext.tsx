@@ -5,9 +5,13 @@ type AuthContextType = {
     loggedIn: boolean;
     username: string | null;
     loading: boolean;
+    loginLoading: boolean;
+    loginError: string | null;
     setLoggedIn: (status: boolean) => void;
     setUsername: (name: string | null) => void;
     logout: () => Promise<void>;
+    login: (user: string, pass: string) => Promise<void>;
+    clearLoginError: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,6 +20,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [loginLoading, setLoginLoading] = useState(false);
+    const [loginError, setLoginError] = useState<string | null>(null);
 
     console.log('AuthProvider initialized with', { loggedIn, loading });
 
@@ -35,6 +41,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             // Or potentially here if it should always redirect
              console.log('Client-side state updated for logout.');
         }
+    };
+
+    const login = async (user: string, pass: string): Promise<void> => {
+        console.log('AuthContext login called for:', user);
+        setLoginLoading(true);
+        setLoginError(null);
+        try {
+            await api.post('/authentication/login', { username: user, password: pass }, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            });
+            setLoggedIn(true);
+            setUsername(user);
+            setLoginError(null);
+            console.log('AuthContext login successful, state updated.');
+            return Promise.resolve();
+        } catch (err: any) {
+            console.error('AuthContext login error:', err);
+            let errorMessage = 'Login failed. Invalid credentials or server error.';
+            if (err.response && err.response.data) {
+                if (typeof err.response.data === 'string' && err.response.data.length < 100) {
+                    errorMessage = err.response.data;
+                } else if (err.response.data.message) {
+                    errorMessage = err.response.data.message;
+                }
+            }
+            setLoggedIn(false);
+            setUsername(null);
+            setLoginError(errorMessage);
+            return Promise.reject(new Error(errorMessage));
+        } finally {
+            setLoginLoading(false);
+        }
+    };
+
+    // Function to clear login error
+    const clearLoginError = () => {
+        setLoginError(null);
     };
 
     useEffect(() => {
@@ -70,7 +114,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('AuthProvider current state:', { loggedIn, username, loading });
 
     return (
-        <AuthContext.Provider value={{ loggedIn, username, loading, setLoggedIn, setUsername, logout }}>
+        <AuthContext.Provider value={{
+            loggedIn, username, loading,
+            loginLoading, loginError,
+            setLoggedIn, setUsername, logout,
+            login,
+            clearLoginError
+        }}>
             {children}
         </AuthContext.Provider>
     );
