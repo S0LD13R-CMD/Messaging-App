@@ -17,7 +17,7 @@ services:
       context: ./messaging.app
       dockerfile: Dockerfile.prod
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://abduls-pi:BloodhoundOctane@69@chat-mongodb:27017/chatapp
+      SPRING_DATA_MONGODB_URI: mongodb://abduls-pi:BloodhoundOctane%469@chat-mongodb:27017/chatapp
     networks:
       - chatnet
 
