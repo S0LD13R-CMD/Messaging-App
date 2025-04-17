@@ -11,6 +11,12 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    }
+  },
+  {
     ...pluginReactConfig,
     settings: {
       react: {
