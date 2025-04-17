@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-// Define and export the type for the context value
+// eslint-disable-next-line @typescript-eslint/no-unused-vars 
 export type AuthContextType = {
     loggedIn: boolean;
     username: string | null;
@@ -13,6 +13,5 @@ export type AuthContextType = {
     login: (user: string, pass: string) => Promise<void>;
     clearLoginError: () => void;
 };
-
-// Create and export the context itself
+ 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined); 
