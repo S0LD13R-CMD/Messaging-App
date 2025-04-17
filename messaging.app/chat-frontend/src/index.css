@@ -12,37 +12,25 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
-  /* overflow: hidden; /* Removing this, as it might hide needed scrollbars */
 }
 
 body {
-  margin: 0; /* Keep margin reset */
-  padding: 0; /* Add padding reset */
-  /* Use Geo font from frontend/src/index.css */
+  margin: 0;
+  padding: 0;
   font-family: 'Geo', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000000; /* Ensure black background globally */
-  color: rgba(255, 255, 255, 0.87); /* Default light text color */
+  background-color: #000000;
+  color: rgba(255, 255, 255, 0.87);
 }
-
-/* Optional: More aggressive reset */
-/*
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-*/
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
-/* Styles copied from frontend/src/styles/buttonAnimations.css */
 /* Button Hover Animations */
 .btn-grow {
   transition: transform 0.3s ease;
@@ -67,8 +55,8 @@ code {
 }
 .btn-slide:hover {
   transform: translateY(-3px);
-  background-color: rgb(255, 255, 255) !important; /* Copied !important */
-  color: black !important; /* Copied !important */
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
 }
 
 .btn-fade {
@@ -76,28 +64,27 @@ code {
 }
 .btn-fade:hover {
   opacity: 0.9;
-  background-color: rgb(255, 255, 255) !important; /* Copied !important */
-  color: black !important; /* Copied !important */
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
 }
 
 .unread-message {
-  background-color: red !important; /* Copied !important */
+  background-color: red !important;
 }
 
-/* Typewriter Animation (Included in case needed later) */
+/* Typewriter Animation */
 .typewriter {
   overflow: hidden;
   border-right: 2px solid white;
   white-space: nowrap;
   margin: 0 auto;
   animation: 
-    typing 3.5s steps(40, end),
-    blink-caret 0.75s step-end infinite 0s,
-    hide-caret 0s ease 3.5s forwards;
+    typing 10s steps(100, end),
+    hide-caret 0s ease 0s forwards;
 }
 
 @keyframes typing {
-  from { width: 0 }
+  from { width: 0% }
   to { width: 100% }
 }
 
@@ -117,7 +104,7 @@ code {
   margin: 0 auto;
   width: 0;
   animation: 
-    typing 3.5s steps(40, end) 1s forwards,
+    typing 10s steps(40, end) 0s forwards,
     blink-caret 0.75s step-end infinite 0s,
     hide-caret 0s ease 4.5s forwards;
 }
@@ -134,8 +121,8 @@ code {
 }
 
 @keyframes typing-infinite {
-  0% { width: 0 }
-  50% { width: 100% }
-  100% { width: 0 }
+  0% { width: 100% }
+  50% { width: 0 }
+  100% { width: 100% }
 }
 /* End of copied styles */

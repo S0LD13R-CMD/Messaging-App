@@ -32,14 +32,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.log('Logout API call successful');
         } catch (err) {
             console.error('Logout API call error:', err);
-            // Decide if we should still log out client-side even if API fails
         } finally {
-             // Always update client-side state regardless of API success/failure for immediate UI feedback
             setLoggedIn(false);
             setUsername(null);
-            // Navigation should happen where logout is called (e.g., in the header button's onClick)
-            // Or potentially here if it should always redirect
-             console.log('Client-side state updated for logout.');
+            console.log('Client-side state updated for logout.');
         }
     };
 
@@ -76,7 +72,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    // Function to clear login error
     const clearLoginError = () => {
         setLoginError(null);
     };

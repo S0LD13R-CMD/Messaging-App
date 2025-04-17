@@ -4,9 +4,8 @@ import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import api from '../api/auth';
 import { useAuth } from '../context/AuthContext';
-import Header from './Header'; // Import the new Header component
+import Header from './Header';
 
-// Styles copied from frontend/src/styles/chatStyles.ts and adapted for dark mode
 const chatStyles = {
   containerStyle2: {
     border: '2px solid #FFFFFF',
@@ -18,13 +17,14 @@ const chatStyles = {
     backgroundColor: 'transparent',
     color: '#FFFFFF',
     width: '100%',
-    flexGrow: 1,
   },
   inputContainer: {
     display: 'flex',
     padding: '10px',
     backgroundColor: 'transparent',
     marginTop: 'auto',
+    minHeight: '50px',
+    boxSizing: 'border-box' as const,
   },
   input: {
     flexGrow: 1,
@@ -38,13 +38,20 @@ const chatStyles = {
     fontFamily: 'inherit',
   },
   sendButton: {
-    backgroundColor: '#BB86FC',
-    color: 'black',
-    border: 'none',
-    padding: '10px 24px',
-    borderRadius: '8px',
+    backgroundColor: 'transparent',
+    color: '#BB86FC',
+    border: '2px solid #BB86FC',
+    padding: '8px 16px',
+    borderRadius: '12px',
     cursor: 'pointer',
     fontFamily: 'inherit',
+    fontWeight: 'bold',
+    transition: 'background-color 0.2s ease, color 0.2s ease',
+  },
+  sendButtonHover: {
+    backgroundColor: 'rgba(187, 134, 252, 0.1)',
+    color: '#FFFFFF',
+    borderColor: '#FFFFFF',
   },
   messageContainer: {
     padding: '8px 12px',
@@ -71,12 +78,12 @@ const chatStyles = {
     alignSelf: 'flex-start',
   },
   messagesArea: {
-    flexGrow: 1,
+    height: 'calc(100% - 50px)',
     overflowY: 'auto' as const,
     padding: '16px',
     display: 'flex',
     flexDirection: 'column' as const,
-    color: 'white'
+    color: 'white',
   },
   messageTime: {
     fontSize: '0.7rem',
@@ -92,6 +99,7 @@ const chatStyles = {
   },
   messageContent: {
     fontSize: '0.9rem',
+    whiteSpace: 'pre-wrap',
   },
   dateHeader: {
       textAlign: 'center' as const,
@@ -126,9 +134,6 @@ const backButtonStyle = {
     fontWeight: 'bold',
     marginRight: '10px',
     transition: 'background-color 0.2s ease, border-color 0.2s ease',
-    height: 'calc(100vh - 120px)',
-    writingMode: 'vertical-rl' as const,
-    textOrientation: 'mixed' as const,
 };
 
 const backButtonHoverStyle = {
@@ -146,6 +151,7 @@ const PrivateChat = () => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const [isBackHover, setIsBackHover] = useState(false);
     const [isWsConnected, setIsWsConnected] = useState(false);
+    const [sendHover, setSendHover] = useState(false);
 
     useEffect(() => {
         console.log('[PrivateChat] useEffect running. senderId:', senderId, 'receiverId:', receiverId);
@@ -232,7 +238,9 @@ const PrivateChat = () => {
 
     const formatTimestamp = (timestamp: string | number): string => {
         if (!timestamp) return '';
-        return new Date(Number(timestamp)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        return new Date(Number(timestamp)).toLocaleTimeString([], {
+             hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false 
+        });
     };
 
     const getDateHeader = (timestamp: string | number): string => {
@@ -279,7 +287,7 @@ const PrivateChat = () => {
         <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
              <Header title={`Chat with ${receiverId}`} />
 
-             <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', flexGrow: 1, padding: '0 10px', display: 'flex' }}>
+             <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', flexGrow: 1, padding: '0 10px', display: 'flex', alignItems: 'stretch' }}>
                 <button
                     onClick={handleGoBack}
                     style={{
@@ -293,26 +301,33 @@ const PrivateChat = () => {
                     ❮
                 </button>
 
-                <div style={{...chatStyles.containerStyle2, flexGrow: 1, height: 'auto' }}>
+                <div style={{...chatStyles.containerStyle2, flexGrow: 1, height: 'calc(100vh - 120px)' }}>
                      <div style={chatStyles.messagesArea}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
                                 <div style={chatStyles.dateHeader}>{date}</div>
-                                {msgsInDate.map((msg: any, index: number) => (
-                                    <div
-                                        key={msg.id || `${date}-${index}`}
-                                        style={{
-                                            ...chatStyles.messageContainer,
-                                            ...(msg.senderId === senderId ? chatStyles.sentMessage : chatStyles.receivedMessage)
-                                        }}
-                                    >
-                                        {msg.senderId !== senderId && (
-                                            <div style={chatStyles.messageSender}>{msg.senderId}</div>
-                                        )}
-                                        <div style={chatStyles.messageContent}>{msg.content}</div>
-                                        <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}</div>
-                                    </div>
-                                ))}
+                                {msgsInDate.map((msg: any, index: number) => {
+                                    const isSender = msg.senderId === senderId;
+                                    return (
+                                        <div
+                                            key={msg.id || `${date}-${index}`}
+                                            style={{
+                                                ...chatStyles.messageContainer,
+                                                ...(isSender ? chatStyles.sentMessage : chatStyles.receivedMessage)
+                                            }}
+                                        >
+                                            {!isSender && (
+                                                <div style={chatStyles.messageSender}>{msg.senderId}</div>
+                                            )}
+                                            <div
+                                                style={chatStyles.messageContent}
+                                            >
+                                                {msg.content}
+                                            </div>
+                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}</div>
+                                        </div>
+                                    );
+                                })}
                             </React.Fragment>
                         ))}
                          <div ref={messagesEndRef} />
@@ -328,11 +343,16 @@ const PrivateChat = () => {
                         />
                         <button
                             type="submit"
-                            style={chatStyles.sendButton}
+                            style={{
+                                ...chatStyles.sendButton,
+                                ...(sendHover ? chatStyles.sendButtonHover : {})
+                            }}
                             className="btn-slide"
                             disabled={!isWsConnected}
+                            onMouseEnter={() => setSendHover(true)}
+                            onMouseLeave={() => setSendHover(false)}
                         >
-                            Send
+                            Yap
                         </button>
                         {!isWsConnected && <span style={{ marginLeft: '10px', color: '#aaaaaa', fontSize: '0.8rem', alignSelf: 'center' }}>Connecting...</span>}
                      </form>

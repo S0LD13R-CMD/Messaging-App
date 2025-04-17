@@ -65,13 +65,12 @@ const userListStyles = {
 const UserList = () => {
     const [users, setUsers] = useState<string[]>([]);
     const [search, setSearch] = useState('');
-    const [hoveredUser, setHoveredUser] = useState<string | null>(null); // For hover effect
+    const [hoveredUser, setHoveredUser] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const res = await api.get('/authentication/users');
-                // Sort users alphabetically
                 setUsers(res.data.sort((a: string, b: string) => a.localeCompare(b)));
             } catch (err) {
                 console.error("Error fetching users", err);

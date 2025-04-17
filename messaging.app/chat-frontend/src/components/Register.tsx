@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/auth';
 
-// Styles copied from frontend/src/styles/loginStyles.ts
-// (Consider extracting to a shared file later if desired)
 const loginStyles = {
   container: {
     minHeight: '100vh',
@@ -83,42 +81,35 @@ const loginStyles = {
     fontFamily: 'inherit',
     fontWeight: 'bold',
   },
-  // Use errorText style from Login component
   errorText: {
      color: '#FF6666',
      marginBottom: '1rem',
      textAlign: 'center' as const,
      fontSize: '0.9rem'
   },
-  // Style for success message
   successText: {
-     color: '#03DAC6', // Use teal color
+     color: '#03DAC6',
      marginBottom: '1rem',
      textAlign: 'center' as const,
      fontSize: '0.9rem'
   }
 };
-// End of copied styles
 
-// Keep the onRegister prop signature if it exists from App.tsx routing
-const Register = ({ onRegister }: { onRegister?: () => void }) => { // Optional prop
+const Register = ({ onRegister }: { onRegister?: () => void }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    // Add state from source
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Use handleSubmit from source, adapted for api instance
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Form validation
         if (password !== confirmPassword) {
             setError('Passwords do not match');
-            setSuccess(''); // Clear success message
+            setSuccess('');
             return;
         }
 
@@ -127,25 +118,21 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => { // Optional 
         setSuccess('');
 
         try {
-            // Use imported api instance
             await api.post('/authentication/register', { username, password }, {
-                 // If needed add headers/credentials, check api/auth.ts
                  headers: { 'Content-Type': 'application/json' },
                  withCredentials: true
             });
 
             setSuccess('Registration successful! Redirecting to login...');
-            if(onRegister) onRegister(); // Call prop if provided
+            if(onRegister) onRegister();
 
-            // Redirect to login page after delay
             setTimeout(() => {
                 navigate('/login');
-            }, 2000); // Keep 2s delay
+            }, 2000); // Keeping 2s delay
 
         } catch (err: any) {
             console.error('Registration error:', err);
              let errorMessage = 'Registration failed. Username may already be taken.';
-             // Attempt to get error message from response
              if (err.response && err.response.data) {
                  if (typeof err.response.data === 'string') {
                      errorMessage = err.response.data;
@@ -159,7 +146,6 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => { // Optional 
         }
     };
 
-    // Use JSX structure from source RegistrationPage.tsx
     return (
         <div style={loginStyles.container}>
             <div style={loginStyles.formContainer}>

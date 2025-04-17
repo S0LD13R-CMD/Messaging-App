@@ -8,26 +8,25 @@ interface HeaderProps {
 
 const headerStyles = {
     nav: {
-        backgroundColor: '#000000', // Black background
+        backgroundColor: '#000000',
         padding: '10px 16px',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.5)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between', // Push items to ends
+        justifyContent: 'space-between',
         color: '#FFFFFF',
         minHeight: '30px',
-        position: 'relative' as const, // Added 'as const'
+        position: 'relative' as const,
     },
     title: {
         fontSize: '1.5rem',
         fontWeight: 'bold',
-        position: 'absolute' as const, // Added 'as const'
+        position: 'absolute' as const,
         left: '50%',
         top: '50%',
-        transform: 'translate(-50%, -50%)', // Center trick
-        // No flexGrow or textAlign needed
+        transform: 'translate(-50%, -50%)',
     },
-    linkGroup: { // Div for links to keep them grouped
+    linkGroup: {
         display: 'flex',
         alignItems: 'center',
     },
@@ -43,23 +42,22 @@ const headerStyles = {
     linkHover: {
          backgroundColor: '#333333',
     },
-    // Corrected Logout Button Style
     button: {
         backgroundColor: 'transparent',
-        color: '#FF6666', // Red text color
-        border: 'none', // No border initially
-        padding: '5px 8px', // Explicitly match link padding
-        borderRadius: '4px', // Match link radius
+        color: '#FF6666',
+        border: 'none',
+        padding: '5px 8px',
+        borderRadius: '4px',
         cursor: 'pointer',
         marginLeft: '10px',
-        fontSize: '0.9rem', // Match link font size
-        fontFamily: 'inherit', // Ensure font matches rest of header
-        lineHeight: 'inherit', // Ensure vertical alignment matches links
+        fontSize: '0.9rem',
+        fontFamily: 'inherit',
+        lineHeight: 'inherit',
         transition: 'background-color 0.2s ease, color 0.2s ease'
     },
     buttonHover: {
-         backgroundColor: '#FF6666', // Red background on hover
-         color: '#000000', // Black text on hover
+         backgroundColor: '#FF6666',
+         color: '#000000',
     }
 };
 
