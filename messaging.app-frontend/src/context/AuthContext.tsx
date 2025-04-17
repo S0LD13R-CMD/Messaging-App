@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/auth';
-// Import the context from the definition file
-import { AuthContext, AuthContextType } from './authContextDefinition'; 
+import { AuthContext } from './authContextDefinition'; 
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loggedIn, setLoggedIn] = useState(false);
