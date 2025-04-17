@@ -161,7 +161,7 @@ const PrivateChat = () => {
                         {msgs.map((msg: any, idx: number) => (
                             <div key={idx}>
                                 <b>[{formatFullTimestamp(msg.timestamp)}]
-                                    ({getRelativeTime(msg.timestamp)}) {msg.senderId}:</b> {msg.content}
+                                    {/* ({getRelativeTime(msg.timestamp)}) */} {msg.senderId}:</b> {msg.content}
                             </div>
                         ))}
                     </div>
