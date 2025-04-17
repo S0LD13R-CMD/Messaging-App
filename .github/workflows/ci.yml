@@ -61,21 +61,21 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: messaging.app-frontend/package-lock.json
 
       - name: Install dependencies
         run: |
-          cd frontend
+          cd messaging.app-frontend
           npm ci
 
       - name: Build frontend
         run: |
-          cd frontend
+          cd messaging.app-frontend
           npm run build
 
       - name: Run tests with coverage
         run: |
-          cd frontend
+          cd messaging.app-frontend
           npm test -- --coverage
           
       - name: Upload Frontend Coverage Report
@@ -83,13 +83,13 @@ jobs:
         if: always()
         with:
           name: frontend-coverage-report
-          path: frontend/coverage/
+          path: messaging.app-frontend/coverage/
           retention-days: 7
           
       - name: Coverage Report Summary
         if: always()
         run: |
-          cd frontend
+          cd messaging.app-frontend
           echo "# Frontend Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
           if [ -d "coverage" ]; then
             echo "## Jest Coverage" >> $GITHUB_STEP_SUMMARY
@@ -120,16 +120,16 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: messaging.app-frontend/package-lock.json
 
       - name: Install dependencies
         run: |
-          cd frontend
+          cd messaging.app-frontend
           npm ci
 
       - name: Run ESLint
         run: |
-          cd frontend
+          cd messaging.app-frontend
           npm run lint
         # If your lint script isn't set up, you can modify package.json or comment this out
 
