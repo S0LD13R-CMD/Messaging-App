@@ -22,7 +22,7 @@ services:
   frontend-service:
     build: 
       context: ./messaging.app-frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: DockerFile.prod
     networks:
       - chatnet
 
