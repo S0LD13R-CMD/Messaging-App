@@ -2,6 +2,7 @@
   "name": "chat-frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@stomp/stompjs": "^7.1.1",
     "@testing-library/dom": "^10.4.0",
