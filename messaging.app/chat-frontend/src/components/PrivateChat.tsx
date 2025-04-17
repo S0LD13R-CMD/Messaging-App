@@ -35,6 +35,7 @@ const chatStyles = {
     color: 'white',
     outline: 'none',
     marginRight: '8px',
+    marginTop: '0px',
     fontFamily: 'inherit',
   },
   sendButton: {

@@ -44,6 +44,7 @@ const chatStyles = {
     padding: '8px 16px',
     borderRadius: '12px',
     cursor: 'pointer',
+    margin: '0px',
     fontFamily: 'inherit',
     fontWeight: 'bold',
     transition: 'background-color 0.2s ease, border-color 0.2s ease',
