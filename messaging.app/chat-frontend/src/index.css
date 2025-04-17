@@ -1,15 +1,31 @@
-body {
+/* Import Google Fonts from frontend/src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Geo&display=swap');
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles combined from both index.css files */
+html, body, #root {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  width: 100%;
+  height: 100%;
+  /* overflow: hidden; /* Removing this, as it might hide needed scrollbars */
+}
+
+body {
+  margin: 0; /* Keep margin reset */
+  padding: 0; /* Add padding reset */
+  /* Use Geo font from frontend/src/index.css */
+  font-family: 'Geo', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Ensure body takes full height potentially */
-  /* height: 100%; */ 
-  /* Ensure background color applies if not set elsewhere */
-  /* background-color: #000000; */
+  background-color: #000000; /* Ensure black background globally */
+  color: rgba(255, 255, 255, 0.87); /* Default light text color */
 }
 
 /* Optional: More aggressive reset */
@@ -25,3 +41,101 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Styles copied from frontend/src/styles/buttonAnimations.css */
+/* Button Hover Animations */
+.btn-grow {
+  transition: transform 0.3s ease;
+}
+.btn-grow:hover {
+  transform: scale(1.05);
+}
+
+.btn-pulse {
+  transition: all 0.3s ease;
+}
+.btn-pulse:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 3px;
+  padding-top: 1px;
+}
+.btn-slide:hover {
+  transform: translateY(-3px);
+  background-color: rgb(255, 255, 255) !important; /* Copied !important */
+  color: black !important; /* Copied !important */
+}
+
+.btn-fade {
+  transition: all 0.3s ease;
+}
+.btn-fade:hover {
+  opacity: 0.9;
+  background-color: rgb(255, 255, 255) !important; /* Copied !important */
+  color: black !important; /* Copied !important */
+}
+
+.unread-message {
+  background-color: red !important; /* Copied !important */
+}
+
+/* Typewriter Animation (Included in case needed later) */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  animation: 
+    typing 3.5s steps(40, end),
+    blink-caret 0.75s step-end infinite 0s,
+    hide-caret 0s ease 3.5s forwards;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: white }
+}
+
+@keyframes hide-caret {
+  to { border-color: transparent }
+}
+
+.typewriter-delay {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 0;
+  animation: 
+    typing 3.5s steps(40, end) 1s forwards,
+    blink-caret 0.75s step-end infinite 0s,
+    hide-caret 0s ease 4.5s forwards;
+}
+
+.typewriter-infinite {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 0;
+  animation: 
+    typing-infinite 5s steps(40, end) infinite alternate,
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing-infinite {
+  0% { width: 0 }
+  50% { width: 100% }
+  100% { width: 0 }
+}
+/* End of copied styles */

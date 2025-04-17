@@ -249,6 +249,7 @@ const GlobalChat = () => {
                         <button
                             type="submit"
                             style={chatStyles.sendButton}
+                            className="btn-slide"
                         >
                             Yap
                         </button>

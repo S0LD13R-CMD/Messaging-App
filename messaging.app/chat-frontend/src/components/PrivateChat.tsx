@@ -281,6 +281,7 @@ const PrivateChat = () => {
                         <button
                             type="submit"
                             style={chatStyles.sendButton}
+                            className="btn-slide"
                         >
                             Send
                         </button>
