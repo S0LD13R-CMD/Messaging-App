@@ -142,3 +142,18 @@ jobs:
           cd messaging.app
           mvn checkstyle:check
         continue-on-error: true
+
+  deploy:
+    name: Deploy to Raspberry Pi
+    needs: [backend-build-and-test, frontend-build-and-test, lint]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.PI_HOST }}
+          username: ${{ secrets.PI_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: bash ~/Messaging-App/deploy.sh
