@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/auth';
 
-type AuthContextType = {
+// Export the type
+export type AuthContextType = {
     loggedIn: boolean;
     username: string | null;
     loading: boolean;
@@ -14,7 +15,8 @@ type AuthContextType = {
     clearLoginError: () => void;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Export the context
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -119,10 +121,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             {children}
         </AuthContext.Provider>
     );
-};
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error('useAuth must be used within an AuthProvider');
-    return context;
 };

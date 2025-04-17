@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import api from '../api/auth';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
 
 const chatStyles = {

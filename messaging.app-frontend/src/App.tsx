@@ -4,7 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import GlobalChat from './components/GlobalChat';
 import PrivateChat from './components/PrivateChat';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import UserList from "./components/UserList";
 import WebSocketEchoTester from "./components/WebSocketEchoTester";
 
