@@ -4,17 +4,16 @@ import com.qmul.messaging.app.model.GlobalMessage;
 import com.qmul.messaging.app.model.PrivateMessage;
 import com.qmul.messaging.app.repository.GlobalMessageRepository;
 import com.qmul.messaging.app.repository.PrivateMessageRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-// FOR ABDUL - This is the controller class that handles all the routes for messages
-// The routes are defined using the @GetMapping and @PostMapping annotations
-// These APIS should ONLY, and ONLY be ACCESSED WITHIN A CHAT.
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
-@RequestMapping("/messages")  // All routes start with /messages
+@RequestMapping("/messages")
 public class MessageController {
 
     private final GlobalMessageRepository globalMessageRepository;
@@ -25,26 +24,21 @@ public class MessageController {
         this.privateMessageRepository = privateMessageRepository;
     }
 
-    /////////////////////////////// GLOBAL MESSAGES /////////////////////////////////
-    // GET /messages -> Fetch all messages
     @GetMapping("/global")
     public List<GlobalMessage> getAllMessages() {
         return globalMessageRepository.findAll();
     }
 
-    // POST /messages -> Save a new message
     @PostMapping("/global")
     public ResponseEntity<GlobalMessage> createMessage(@RequestBody GlobalMessage message) {
         try {
             GlobalMessage savedMessage = globalMessageRepository.save(message);
-            return ResponseEntity.ok(savedMessage); // Returns 200 OK with the saved message
+            return ResponseEntity.ok(savedMessage);
         } catch (Exception e) {
-            return ResponseEntity.status(500).build(); // Returns 500 Internal Server Error if something fails
+            return ResponseEntity.status(500).build();
         }
     }
 
-    /////////////////////////////// PRIVATE MESSAGES API /////////////////////////////////
-    // Change this to find all by ids
     @GetMapping("/private")
     public List<PrivateMessage> getAllPrivateMessages() {
         return privateMessageRepository.findAll();
@@ -60,4 +54,19 @@ public class MessageController {
         }
     }
 
+    @GetMapping("/private-chat/{username}")
+    public ResponseEntity<List<PrivateMessage>> getPrivateChatWithUser(
+            @PathVariable String username, HttpSession session) {
+        String currentUser = (String) session.getAttribute("username");
+        if (currentUser == null) return ResponseEntity.status(401).build();
+
+        String roomId = Stream.of(currentUser, username)
+                .sorted()
+                .collect(Collectors.joining("-"));
+
+        List<PrivateMessage> messages = privateMessageRepository
+                .findByPrivateChatroomIdOrderByTimestampAsc(roomId);
+
+        return ResponseEntity.ok(messages);
+    }
 }

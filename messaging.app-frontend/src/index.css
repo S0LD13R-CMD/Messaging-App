@@ -1,0 +1,128 @@
+/* Import Google Fonts from frontend/src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Geo&display=swap');
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles combined from both index.css files */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Geo', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #000000;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Button Hover Animations */
+.btn-grow {
+  transition: transform 0.3s ease;
+}
+.btn-grow:hover {
+  transform: scale(1.05);
+}
+
+.btn-pulse {
+  transition: all 0.3s ease;
+}
+.btn-pulse:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.btn-slide {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 3px;
+  padding-top: 1px;
+}
+.btn-slide:hover {
+  transform: translateY(-3px);
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+}
+
+.btn-fade {
+  transition: all 0.3s ease;
+}
+.btn-fade:hover {
+  opacity: 0.9;
+  background-color: rgb(255, 255, 255) !important;
+  color: black !important;
+}
+
+.unread-message {
+  background-color: red !important;
+}
+
+/* Typewriter Animation */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  animation: 
+    typing 10s steps(100, end),
+    hide-caret 0s ease 0s forwards;
+}
+
+@keyframes typing {
+  from { width: 0% }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: white }
+}
+
+@keyframes hide-caret {
+  to { border-color: transparent }
+}
+
+.typewriter-delay {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 0;
+  animation: 
+    typing 10s steps(40, end) 0s forwards,
+    blink-caret 0.75s step-end infinite 0s,
+    hide-caret 0s ease 4.5s forwards;
+}
+
+.typewriter-infinite {
+  overflow: hidden;
+  border-right: 2px solid white;
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 0;
+  animation: 
+    typing-infinite 5s steps(40, end) infinite alternate,
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing-infinite {
+  0% { width: 100% }
+  50% { width: 0 }
+  100% { width: 100% }
+}
+/* End of copied styles */
