@@ -2,6 +2,7 @@ package com.qmul.messaging.app.controller;
 
 import com.qmul.messaging.app.model.Users;
 import com.qmul.messaging.app.repository.UsersRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -33,6 +36,45 @@ public class AuthenticationController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test(HttpServletRequest request) {
+        Map<String, String> headers = new HashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            headers.put(headerName, request.getHeader(headerName));
+        }
+        return ResponseEntity.ok("Test endpoint working. Headers: " + headers);
+    }
+    
+    @PostMapping("/register-test")
+    public ResponseEntity<?> registerTest(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
+        // Log headers for debugging
+        Map<String, String> headers = new HashMap<>();
+        Enumeration<String> headerNames = httpRequest.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            headers.put(headerName, httpRequest.getHeader(headerName));
+        }
+        
+        System.out.println("Register test called with headers: " + headers);
+        System.out.println("Request body: " + request);
+        
+        final String username = request.get("username");
+        final String password = request.get("password");
+
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            return ResponseEntity.badRequest().body("Username and password must not be blank.");
+        }
+
+        // Skip validation for testing
+        String hashedPassword = passwordEncoder.encode(password);
+        Users newUser = new Users(username, hashedPassword);
+        usersRepository.save(newUser);
+
+        return ResponseEntity.ok("User registered successfully via test endpoint");
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
