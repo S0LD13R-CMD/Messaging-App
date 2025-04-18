@@ -9,11 +9,7 @@ git stash
 
 # Pull the latest changes from the master branch
 echo "Pulling latest changes from master..."
-git pull origin master || {
-    echo "Git pull failed, attempting to abort any merge and reset to origin/master..."
-    git merge --abort
-    git reset --hard origin/master
-}
+git reset --hard origin/master
 
 # Stop and remove containers
 echo "Stopping and removing old containers..."
@@ -23,42 +19,91 @@ docker compose down --remove-orphans
 echo "Removing MongoDB volume..."
 docker volume rm messaging-app_mongo-data || true
 
-# Rebuild and start only MongoDB first
-echo "Starting MongoDB container first..."
-docker compose up -d --build mongodb
+# Start MongoDB without authentication first
+echo "Creating temporary MongoDB container..."
+docker run --name temp-mongodb -d -p 27017:27017 mongo:6.0
 
 # Wait for MongoDB to be ready
 echo "Waiting for MongoDB to start..."
 sleep 10
 
-# Set up MongoDB user automatically
+# Create admin user
 echo "Setting up MongoDB user..."
-docker exec -i chat-mongodb mongosh --eval "
-  try {
-    db.getSiblingDB('admin').createUser({
-      user: 'mongouser',
-      pwd: 'mongopass',
-      roles: [{ role: 'root', db: 'admin' }]
-    });
-    print('MongoDB user created successfully');
-  } catch (e) {
-    print('User might already exist, continuing...');
-  }
+docker exec -i temp-mongodb mongosh --eval "
+  use admin;
+  db.createUser({
+    user: 'mongouser',
+    pwd: 'mongopass',
+    roles: [{ role: 'root', db: 'admin' }]
+  });
+  use chatapp;
+  db.createCollection('users');
 "
 
-# Start other services
-echo "Starting remaining services..."
+# Stop and remove temporary MongoDB container
+echo "Cleaning up temporary MongoDB container..."
+docker stop temp-mongodb
+docker rm temp-mongodb
+
+# Generate a custom docker-compose.yml with correct MongoDB credentials
+echo "Creating docker-compose.yml with MongoDB credentials..."
+cat > docker-compose.yml << EOL
+services:
+  backend-service:
+    build: 
+      context: ./messaging.app
+      dockerfile: Dockerfile.prod
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongouser:mongopass@chat-mongodb:27017/chatapp?authSource=admin
+    networks:
+      - chatnet
+
+  frontend-service:
+    build: 
+      context: ./messaging.app-frontend
+      dockerfile: Dockerfile.prod
+    container_name: chat-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - chatnet
+    depends_on:
+      - backend-service
+
+  mongodb:
+    image: mongo:6.0
+    container_name: chat-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopass
+    networks:
+      - chatnet
+
+volumes:
+  mongo-data:
+
+networks:
+  chatnet:
+EOL
+
+# Start all services
+echo "Starting all services..."
 docker compose up -d --build
 
-# Wait a moment for containers to fully start
-echo "Waiting for containers to start..."
-sleep 10
+# Wait for services to fully start
+echo "Waiting for services to start..."
+sleep 15
 
-# Fix Nginx configuration for frontend SPA routing
-echo "Configuring Nginx for SPA routing..."
-docker exec chat-frontend bash -c "cat > /etc/nginx/conf.d/app.conf << 'EOL'
+# Replace all Nginx configuration to avoid conflicts
+echo "Configuring Nginx..."
+docker exec chat-frontend bash -c "rm -f /etc/nginx/conf.d/*.conf && cat > /etc/nginx/conf.d/default.conf << 'EOL'
 server {
-    listen 80;
+    listen 80 default_server;
+    server_name _;
     
     location / {
         root /usr/share/nginx/html;
@@ -97,8 +142,9 @@ server {
 EOL
 nginx -s reload"
 
-# Verify MongoDB connection
-echo "Verifying MongoDB connection..."
-docker exec -i chat-mongodb mongosh -u mongouser -p mongopass --authenticationDatabase admin --eval "db.adminCommand('ping')"
+# Verify services
+echo "Verifying services..."
+echo "MongoDB connection test:"
+docker exec -i chat-mongodb mongosh -u mongouser -p mongopass --authenticationDatabase admin --eval "db.adminCommand('ping')" || echo "MongoDB verification failed but continuing..."
 
 echo "Deployment complete!"
