@@ -21,6 +21,9 @@ const App = () => {
     return (
         <div style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
             <Routes>
+                {/* Test route - accessible without login */}
+                <Route path="/test" element={<TestPage />} />
+                
                 {/* Force login page for all initial requests */}
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={
@@ -53,7 +56,6 @@ const App = () => {
                     ? <WebSocketEchoTester /> 
                     : <Navigate to="/login" replace />
                 } />
-                <Route path="/test" element={<TestPage />} />
                 <Route path="*" element={<Navigate to={loggedIn ? "/chat" : "/login"} replace />} />
             </Routes>
         </div>
