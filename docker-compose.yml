@@ -28,7 +28,7 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: abduls-pi
+      MONGO_INITDB_ROOT_USERNAME: MongoAdmin
       MONGO_INITDB_ROOT_PASSWORD: BloodhoundOctane123
     networks:
       - chatnet
