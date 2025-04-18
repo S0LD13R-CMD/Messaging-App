@@ -9,7 +9,8 @@ git stash
 
 # Pull the latest changes from the master branch
 echo "Pulling latest changes from master..."
-git reset --hard origin/master
+git fetch --all  # Fetch all updates from all remotes
+git reset --hard origin/master  # Reset to the latest state of origin/master
 
 # Stop and remove containers
 echo "Stopping and removing old containers..."
@@ -101,36 +102,33 @@ sleep 10
 # Replace all Nginx configuration to avoid conflicts
 echo "Configuring Nginx..."
 docker exec chat-frontend bash -c "rm -f /etc/nginx/conf.d/*.conf && cat > /etc/nginx/conf.d/default.conf << 'EOL'
-# Global map for CORS headers to avoid duplication
-map \$request_method \$cors_header {
-    OPTIONS 'https://chat.yappatron.org';
-    default 'https://chat.yappatron.org';
-}
-
 server {
     listen 80;
     server_name api.yappatron.org;
     
-    # Common CORS headers for all responses
-    add_header 'Access-Control-Allow-Origin' \$cors_header always;
-    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
-    add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
-    add_header 'Access-Control-Allow-Credentials' 'true' always;
-    
-    # Handle OPTIONS preflight specially
-    if (\$request_method = 'OPTIONS') {
-        add_header 'Access-Control-Max-Age' '1728000' always;
-        add_header 'Content-Type' 'text/plain' always;
-        add_header 'Content-Length' '0' always;
-        return 204;
-    }
-    
     location / {
+        if (\$request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Max-Age' '1728000' always;
+            add_header 'Content-Type' 'text/plain' always;
+            add_header 'Content-Length' '0' always;
+            return 204;
+        }
+        
         proxy_pass http://backend-service:8080;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Origin \$http_origin;
+        
+        add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
     }
 }
 
@@ -145,14 +143,11 @@ server {
     }
     
     location /api/ {
-        # Common CORS headers for all responses
-        add_header 'Access-Control-Allow-Origin' \$cors_header always;
-        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
-        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
-        add_header 'Access-Control-Allow-Credentials' 'true' always;
-        
-        # Handle OPTIONS preflight specially
         if (\$request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
             add_header 'Access-Control-Max-Age' '1728000' always;
             add_header 'Content-Type' 'text/plain' always;
             add_header 'Content-Length' '0' always;
@@ -166,6 +161,11 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Origin \$http_origin;
         proxy_cookie_path / /;
+        
+        add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
     }
 }
 EOL
@@ -175,5 +175,21 @@ nginx -s reload"
 echo "Verifying services..."
 echo "MongoDB connection test:"
 docker exec -i chat-mongodb mongosh -u mongouser -p mongopass --authenticationDatabase admin --eval "db.adminCommand('ping')" || echo "MongoDB verification failed but continuing..."
+
+# Update the auth.ts file
+echo "Updating frontend API configuration..."
+cat > messaging.app-frontend/src/api/auth.ts << EOL
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: 'https://chat.yappatron.org/api',
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
+
+export default api;
+EOL
 
 echo "Deployment complete!"
