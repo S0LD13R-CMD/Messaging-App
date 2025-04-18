@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/auth';
 
 const loginStyles = {
   container: {
@@ -117,33 +116,47 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
         setError('');
         setSuccess('');
 
-        try {
-            await api.post('/authentication/register', { username, password }, {
-                 headers: { 'Content-Type': 'application/json' },
-                 withCredentials: true
-            });
-
-            setSuccess('Registration successful! Redirecting to login...');
-            if(onRegister) onRegister();
-
-            setTimeout(() => {
-                navigate('/login');
-            }, 2000); // Keeping 2s delay
-
-        } catch (err: any) {
-            console.error('Registration error:', err);
-             let errorMessage = 'Registration failed. Username may already be taken.';
-             if (err.response && err.response.data) {
-                 if (typeof err.response.data === 'string') {
-                     errorMessage = err.response.data;
-                 } else if (err.response.data.message) {
-                     errorMessage = err.response.data.message;
-                 }
-             }
-             setError(errorMessage);
-        } finally {
+        // Use XMLHttpRequest instead of axios
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://chat.yappatron.org/api/authentication/register', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+        
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                setSuccess('Registration successful! Redirecting to login...');
+                if(onRegister) onRegister();
+                
+                setTimeout(() => {
+                    navigate('/login');
+                }, 2000);
+            } else {
+                console.error('Registration error:', xhr.status, xhr.statusText);
+                let errorMessage = 'Registration failed. Username may already be taken.';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (typeof response === 'string') {
+                        errorMessage = response;
+                    } else if (response.message) {
+                        errorMessage = response.message;
+                    }
+                } catch (e) {
+                    if (xhr.responseText) {
+                        errorMessage = xhr.responseText;
+                    }
+                }
+                setError(errorMessage);
+            }
             setIsLoading(false);
-        }
+        };
+        
+        xhr.onerror = function() {
+            console.error('Registration network error');
+            setError('Network error. Please check your connection.');
+            setIsLoading(false);
+        };
+        
+        xhr.send(JSON.stringify({ username, password }));
     };
 
     return (
