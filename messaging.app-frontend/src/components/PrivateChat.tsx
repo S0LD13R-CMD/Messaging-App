@@ -5,6 +5,7 @@ import SockJS from 'sockjs-client';
 import api from '../api/auth';
 import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
+import createSockJS from '../api/websocket';
 
 const chatStyles = {
   containerStyle2: {
@@ -187,7 +188,7 @@ const PrivateChat = () => {
             }
 
             console.log('[PrivateChat] Setting up WebSocket connection.');
-            const socket = new SockJS('http://localhost:8080/ws');
+            const socket = createSockJS();
             const client = new Client({
                 webSocketFactory: () => socket,
                 debug: str => console.log('[PrivateChat STOMP]', str),
