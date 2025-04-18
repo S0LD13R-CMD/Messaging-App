@@ -12,39 +12,44 @@ echo "Pulling latest changes from master..."
 git fetch --all  # Fetch all updates from all remotes
 git reset --hard origin/master  # Reset to the latest state of origin/master
 
-# Stop and remove containers
-echo "Stopping and removing old containers..."
+# Stop containers but keep volumes
+echo "Stopping containers..."
 docker compose down --remove-orphans
 
-# Remove MongoDB volume to start fresh
-echo "Removing MongoDB volume..."
-docker volume rm messaging-app_mongo-data || true
-
-# Start MongoDB without authentication first
-echo "Creating temporary MongoDB container..."
-docker run --name temp-mongodb -d -p 27017:27017 mongo:6.0
-
-# Wait for MongoDB to be ready
-echo "Waiting for MongoDB to start..."
-sleep 10
-
-# Create admin user
-echo "Setting up MongoDB user..."
-docker exec -i temp-mongodb mongosh --eval "
-  use admin;
-  db.createUser({
-    user: 'mongouser',
-    pwd: 'mongopass',
-    roles: [{ role: 'root', db: 'admin' }]
-  });
-  use chatapp;
-  db.createCollection('users');
-"
-
-# Stop and remove temporary MongoDB container
-echo "Cleaning up temporary MongoDB container..."
-docker stop temp-mongodb
-docker rm temp-mongodb
+# Check if MongoDB is already set up
+echo "Checking if MongoDB data exists..."
+if [ ! "$(docker volume ls -q -f name=messaging-app_mongo-data)" ] || [ "$(docker volume ls -q -f name=messaging-app_mongo-data)" = "" ]; then
+  # Only create MongoDB setup if volume doesn't exist
+  echo "MongoDB volume not found. Setting up new database..."
+  
+  # Start MongoDB without authentication first
+  echo "Creating temporary MongoDB container..."
+  docker run --name temp-mongodb -d -p 27017:27017 mongo:6.0
+  
+  # Wait for MongoDB to be ready
+  echo "Waiting for MongoDB to start..."
+  sleep 10
+  
+  # Create admin user
+  echo "Setting up MongoDB user..."
+  docker exec -i temp-mongodb mongosh --eval "
+    use admin;
+    db.createUser({
+      user: 'mongouser',
+      pwd: 'mongopass',
+      roles: [{ role: 'root', db: 'admin' }]
+    });
+    use chatapp;
+    db.createCollection('users');
+  "
+  
+  # Stop and remove temporary MongoDB container
+  echo "Cleaning up temporary MongoDB container..."
+  docker stop temp-mongodb
+  docker rm temp-mongodb
+else
+  echo "MongoDB volume exists. Using existing database."
+fi
 
 # Generate a custom docker-compose.yml with correct MongoDB credentials
 echo "Creating docker-compose.yml with MongoDB credentials..."
