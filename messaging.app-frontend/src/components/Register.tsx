@@ -118,7 +118,10 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
         setSuccess('');
 
         try {
-            await api.post('/authentication/register', { username, password });
+            await api.post('/authentication/register', { username, password }, {
+                 headers: { 'Content-Type': 'application/json' },
+                 withCredentials: true
+            });
 
             setSuccess('Registration successful! Redirecting to login...');
             if(onRegister) onRegister();
