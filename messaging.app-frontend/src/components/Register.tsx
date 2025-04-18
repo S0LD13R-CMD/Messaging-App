@@ -140,7 +140,7 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
                     } else if (response.message) {
                         errorMessage = response.message;
                     }
-                } catch (_) {
+                } catch {
                     if (xhr.responseText) {
                         errorMessage = xhr.responseText;
                     }
