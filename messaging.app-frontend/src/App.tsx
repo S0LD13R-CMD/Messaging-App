@@ -7,6 +7,7 @@ import PrivateChat from './components/PrivateChat';
 import { useAuth } from './hooks/useAuth';
 import UserList from "./components/UserList";
 import WebSocketEchoTester from "./components/WebSocketEchoTester";
+import TestPage from './components/TestPage';
 
 const App = () => {
     const { loggedIn, loading } = useAuth();
@@ -52,6 +53,7 @@ const App = () => {
                     ? <WebSocketEchoTester /> 
                     : <Navigate to="/login" replace />
                 } />
+                <Route path="/test" element={<TestPage />} />
                 <Route path="*" element={<Navigate to={loggedIn ? "/chat" : "/login"} replace />} />
             </Routes>
         </div>
