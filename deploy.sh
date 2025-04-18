@@ -8,12 +8,11 @@ echo "Pulling latest changes from master..."
 git pull origin master
 
 # Stop and remove only the frontend and backend containers
-echo "Stopping and removing frontend and backend containers..."
-docker compose stop frontend-service backend-service
-docker compose rm -f frontend-service backend-service
+echo "Stopping and removing old containers..."
+docker compose down --remove-orphans
 
 # Rebuild and start only the frontend and backend containers
-echo "Rebuilding and starting frontend and backend containers..."
-docker compose up -d --build frontend-service backend-service
+echo "Rebuilding and starting containers..."
+docker compose up -d --build
 
 echo "Deployment complete!"
