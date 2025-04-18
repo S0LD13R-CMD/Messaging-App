@@ -96,13 +96,46 @@ docker compose up -d --build
 
 # Wait for services to fully start
 echo "Waiting for services to start..."
-sleep 15
+sleep 10
 
 # Replace all Nginx configuration to avoid conflicts
 echo "Configuring Nginx..."
 docker exec chat-frontend bash -c "rm -f /etc/nginx/conf.d/*.conf && cat > /etc/nginx/conf.d/default.conf << 'EOL'
 server {
     listen 80 default_server;
+    
+    # Handle api.yappatron.org domain
+    server_name api.yappatron.org;
+    
+    location / {
+        proxy_pass http://backend-service:8080;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        
+        # CORS headers for API domain
+        add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+    }
+    
+    # Handle OPTIONS preflight for API domain
+    if (\$request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Max-Age' '1728000' always;
+        add_header 'Content-Type' 'text/plain charset=UTF-8' always;
+        add_header 'Content-Length' '0' always;
+        return 204;
+    }
+}
+
+server {
+    listen 80;
     server_name _;
     
     location / {
@@ -114,13 +147,13 @@ server {
     location /api/ {
         # Handle OPTIONS preflight requests
         if (\$request_method = 'OPTIONS') {
-            add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org';
-            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
-            add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin';
-            add_header 'Access-Control-Allow-Credentials' 'true';
-            add_header 'Access-Control-Max-Age' '1728000';
-            add_header 'Content-Length' 0;
-            add_header 'Content-Type' 'text/plain';
+            add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE' always;
+            add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Max-Age' '1728000' always;
+            add_header 'Content-Length' '0' always;
+            add_header 'Content-Type' 'text/plain' always;
             return 204;
         }
         
