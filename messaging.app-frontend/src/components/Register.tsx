@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api/auth';
 
 const loginStyles = {
   container: {
@@ -118,10 +117,19 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
         setSuccess('');
 
         try {
-            await api.post('/authentication/register', { username, password }, {
-                 headers: { 'Content-Type': 'application/json' },
-                 withCredentials: true
+            const response = await fetch('https://chat.yappatron.org/api/authentication/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ username, password })
             });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || `Server responded with status: ${response.status}`);
+            }
 
             setSuccess('Registration successful! Redirecting to login...');
             if(onRegister) onRegister();
@@ -133,12 +141,8 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
         } catch (err: any) {
             console.error('Registration error:', err);
              let errorMessage = 'Registration failed. Username may already be taken.';
-             if (err.response && err.response.data) {
-                 if (typeof err.response.data === 'string') {
-                     errorMessage = err.response.data;
-                 } else if (err.response.data.message) {
-                     errorMessage = err.response.data.message;
-                 }
+             if (err.message) {
+                 errorMessage = err.message;
              }
              setError(errorMessage);
         } finally {
