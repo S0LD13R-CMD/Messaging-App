@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import createSockJS from '../api/websocket';
 
 const WebSocketEchoTester = () => {
-    const [status, setStatus] = useState('Connecting...');
+    const [status, setStatus] = useState('Disconnected');
     const [serverEcho, setServerEcho] = useState('');
+    const clientRef = useRef<Client | null>(null);
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = createSockJS();
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),
@@ -24,6 +26,7 @@ const WebSocketEchoTester = () => {
         });
 
         client.activate();
+        clientRef.current = client;
 
         return () => {
             client.deactivate();

@@ -130,6 +130,24 @@ server {
         add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With, Accept, Origin' always;
         add_header 'Access-Control-Allow-Credentials' 'true' always;
     }
+    
+    # Add WebSocket configuration
+    location /ws {
+        proxy_pass http://backend-service:8080/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        
+        # Add CORS headers for WebSocket
+        add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+    }
 }
 
 server {
@@ -140,6 +158,25 @@ server {
         root /usr/share/nginx/html;
         index index.html;
         try_files \$uri \$uri/ /index.html;
+        add_header Cache-Control "no-store, no-cache, must-revalidate" always;
+    }
+    
+    # Add WebSocket configuration
+    location /api/ws {
+        proxy_pass http://backend-service:8080/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        
+        # Add CORS headers for WebSocket
+        add_header 'Access-Control-Allow-Origin' 'https://chat.yappatron.org' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization, X-Requested-With' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
     }
     
     location /api/ {

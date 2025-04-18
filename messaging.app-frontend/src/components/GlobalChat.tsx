@@ -3,6 +3,7 @@ import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
+import createSockJS from '../api/websocket';
 
 const chatStyles = {
   containerStyle1: {
@@ -146,7 +147,7 @@ const GlobalChat = () => {
         setMessages([{ id: 'system-welcome', content: 'Welcome to the global chat!', senderId: 'System', timestamp: Date.now().toString() }]);
 
         console.log('[GlobalChat] senderId found, attempting to connect WebSocket.');
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = createSockJS();
         const client = new Client({
             webSocketFactory: () => socket,
             debug: str => console.log('[GlobalChat STOMP]', str),
