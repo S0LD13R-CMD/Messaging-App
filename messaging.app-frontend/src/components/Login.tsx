@@ -66,6 +66,10 @@ const loginStyles = {
     textAlign: 'center' as const,
     fontSize: '0.875rem',
     width: '100%',
+    transition: 'text-decoration 0.3s ease',
+  },
+  linkHover: {
+    textDecoration: 'underline',
   },
   button: {
     backgroundColor: 'rgb(255, 255, 255)',
@@ -92,6 +96,7 @@ const loginStyles = {
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [registerHover, setRegisterHover] = useState(false);
     const { login, loginLoading, loginError, clearLoginError } = useAuth();
 
     useEffect(() => {
@@ -152,12 +157,21 @@ const Login = () => {
                         />
                     </div>
 
-                    <Link to="/register" style={loginStyles.link}>
-                        Need to make account?
+                    <Link 
+                        to="/register" 
+                        style={{
+                            ...loginStyles.link,
+                            ...(registerHover ? loginStyles.linkHover : {})
+                        }}
+                        onMouseEnter={() => setRegisterHover(true)}
+                        onMouseLeave={() => setRegisterHover(false)}
+                    >
+                        No Account? No Problem. Sign up now!
                     </Link>
 
                     <button
                         type="submit"
+                        className="btn-slide"
                         style={{
                             ...loginStyles.button,
                             opacity: loginLoading ? 0.7 : 1,

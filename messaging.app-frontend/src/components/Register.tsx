@@ -66,6 +66,10 @@ const loginStyles = {
     textAlign: 'center' as const,
     fontSize: '0.875rem',
     width: '100%',
+    transition: 'text-decoration 0.3s ease',
+  },
+  linkHover: {
+    textDecoration: 'underline',
   },
   button: {
     backgroundColor: 'rgb(255, 255, 255)',
@@ -102,6 +106,7 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [loginHover, setLoginHover] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -208,14 +213,23 @@ const Register = ({ onRegister }: { onRegister?: () => void }) => {
                         />
                     </div>
 
-                    {/* Use Link component */}
-                    <Link to="/login" style={loginStyles.link}>
+                    {/* Use Link component with hover effect */}
+                    <Link 
+                        to="/login" 
+                        style={{
+                            ...loginStyles.link,
+                            ...(loginHover ? loginStyles.linkHover : {})
+                        }}
+                        onMouseEnter={() => setLoginHover(true)}
+                        onMouseLeave={() => setLoginHover(false)}
+                    >
                         Already have an account? Sign in
                     </Link>
 
-                    {/* Styled button */}
+                    {/* Styled button with animation class */}
                     <button
                         type="submit"
+                        className="btn-slide"
                         style={{
                             ...loginStyles.button,
                             opacity: isLoading ? 0.7 : 1,
