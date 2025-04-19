@@ -288,17 +288,25 @@ const PrivateChat = () => {
     }, {});
 
     return (
-        <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
+        <div style={{ 
+            backgroundColor: '#000000', 
+            color: '#FFFFFF', 
+            height: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column',
+            overflow: 'hidden'
+        }}>
              <Header title={`Chat with ${receiverId}`} />
 
              <div style={{ 
                  maxWidth: '1280px', 
                  width: '95%', 
-                 margin: '20px auto', 
+                 margin: '0 auto', 
                  flexGrow: 1, 
                  padding: '0 10px', 
                  display: 'flex', 
-                 alignItems: 'stretch'
+                 alignItems: 'stretch',
+                 overflow: 'hidden'
              }}>
                 <button
                     onClick={handleGoBack}
@@ -314,7 +322,10 @@ const PrivateChat = () => {
                 </button>
 
                 <div style={{...chatStyles.containerStyle2, flexGrow: 1 }}>
-                     <div style={chatStyles.messagesArea}>
+                     <div style={{
+                         ...chatStyles.messagesArea,
+                         overflowY: 'auto'
+                     }}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
                                 <div style={chatStyles.dateHeader}>{date}</div>

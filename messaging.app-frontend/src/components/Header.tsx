@@ -21,10 +21,7 @@ const headerStyles = {
     title: {
         fontSize: '1.5rem',
         fontWeight: 'bold',
-        position: 'absolute' as const,
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
+        marginRight: 'auto',
     },
     linkGroup: {
         display: 'flex',
@@ -72,9 +69,17 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         navigate('/login');
     };
 
+    const getTransformedTitle = () => {
+        if (title === "Global Chat") return "Global Yap";
+        if (title === "Users") return "Yappers";
+        if (title.startsWith("Chat with")) return title.replace("Chat with", "Yap with");
+        return title;
+    };
+
     return (
         <nav style={headerStyles.nav}>
-            {/* Link Group on Left */}
+            <div style={headerStyles.title}>{getTransformedTitle()}</div>
+
             <div style={headerStyles.linkGroup}>
                 <Link
                     to="/chat"
@@ -85,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                     onMouseEnter={() => setHoveredLink('global')}
                     onMouseLeave={() => setHoveredLink(null)}
                 >
-                    Global Chat
+                    Global Yap
                 </Link>
                 <Link
                     to="/users"
@@ -96,25 +101,20 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                     onMouseEnter={() => setHoveredLink('users')}
                     onMouseLeave={() => setHoveredLink(null)}
                 >
-                    Users
+                    Yappers
                 </Link>
+                <button
+                    onClick={handleLogout}
+                    style={{
+                        ...headerStyles.button,
+                        ...(logoutHover ? headerStyles.buttonHover : {})
+                    }}
+                    onMouseEnter={() => setLogoutHover(true)}
+                    onMouseLeave={() => setLogoutHover(false)}
+                >
+                    Logout
+                </button>
             </div>
-
-            {/* Absolutely Centered Title */}
-            <div style={headerStyles.title}>{title}</div>
-
-            {/* Logout Button on Right (no extra div needed with space-between) */}
-            <button
-                onClick={handleLogout}
-                style={{
-                    ...headerStyles.button,
-                    ...(logoutHover ? headerStyles.buttonHover : {})
-                }}
-                onMouseEnter={() => setLogoutHover(true)}
-                onMouseLeave={() => setLogoutHover(false)}
-            >
-                Logout
-            </button>
         </nav>
     );
 };
