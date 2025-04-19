@@ -6,7 +6,6 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  // This defines a section to make 'global' available for libraries like sockjs-client
   define: {
     global: 'window',
   },

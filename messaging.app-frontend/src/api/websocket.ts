@@ -8,13 +8,11 @@ const getWebSocketUrl = () => {
   if (domain === 'localhost' || domain === '127.0.0.1') {
     return `http://localhost:8080/ws`;
   } else {
-    // Use the same protocol (http/https) as the current page
     const protocol = isHttps ? 'https' : 'http';
     return `${protocol}://${domain}/api/ws`;
   }
 };
 
-// Create a SockJS instance with the appropriate URL
 const createSockJS = () => {
   const wsUrl = getWebSocketUrl();
   console.log(`[WebSocket] Connecting to: ${wsUrl}`);
