@@ -85,13 +85,32 @@ const UserList = () => {
 
     return (
         // Outer wrapper
-        <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ 
+            backgroundColor: '#000000', 
+            color: '#FFFFFF', 
+            height: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column',
+            overflow: 'hidden' // Prevent outer scrollbar
+        }}>
             <Header title="Users" />
 
             {/* Centering div - ADD flexGrow: 1 and display: flex */}
-            <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', padding: '0 10px', flexGrow: 1, display: 'flex' }}>
+            <div style={{ 
+                maxWidth: '1280px', 
+                width: '95%', 
+                margin: '0 auto', 
+                padding: '0 10px', 
+                flexGrow: 1, 
+                display: 'flex',
+                overflow: 'hidden' // Ensure no horizontal scrollbar
+            }}>
                 {/* Styled container - Uses flexGrow now */}
-                <div style={userListStyles.container}>
+                <div style={{
+                    ...userListStyles.container,
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
                     <input
                         type="text"
                         placeholder="Search users..."
@@ -99,7 +118,11 @@ const UserList = () => {
                         onChange={e => setSearch(e.target.value)}
                         style={userListStyles.searchInput}
                     />
-                    <ul style={userListStyles.list}>
+                    <ul style={{
+                        ...userListStyles.list,
+                        overflowY: 'auto', // Always use scrollbar in container
+                        flexGrow: 1
+                    }}>
                         {filteredUsers.length > 0 ? (
                             filteredUsers.map((username: string) => (
                                 <li key={username} style={userListStyles.listItem}>

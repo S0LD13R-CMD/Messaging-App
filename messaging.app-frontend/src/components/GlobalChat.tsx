@@ -79,7 +79,7 @@ const chatStyles = {
     color: '#FFFFFF',
     alignSelf: 'flex-start',
   },
-   systemMessage: {
+  systemMessage: {
     textAlign: 'center' as const,
     maxWidth: '60%',
     margin: '10px auto',
@@ -231,12 +231,30 @@ const GlobalChat = () => {
     }, {});
 
     return (
-        <div style={{ backgroundColor: '#000000', color: '#FFFFFF', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ 
+            backgroundColor: '#000000', 
+            color: '#FFFFFF', 
+            height: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column',
+            overflow: 'hidden' 
+        }}>
             <Header title="Global Chat" />
 
-            <div style={{ maxWidth: '1280px', width: '95%', margin: '20px auto', padding: '0 10px', flexGrow: 1, display: 'flex' }}>
-                 <div style={chatStyles.containerStyle1}>
-                     <div style={chatStyles.messagesArea}>
+            <div style={{ 
+                maxWidth: '1280px', 
+                width: '95%', 
+                margin: '0 auto', 
+                padding: '0 10px', 
+                flexGrow: 1, 
+                display: 'flex',
+                overflow: 'hidden' 
+            }}>
+                <div style={chatStyles.containerStyle1}>
+                    <div style={{
+                        ...chatStyles.messagesArea,
+                        overflowY: 'auto'
+                    }}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
                                 <div style={chatStyles.dateHeader}>{date}</div>
@@ -279,10 +297,10 @@ const GlobalChat = () => {
                                 })}
                             </React.Fragment>
                         ))}
-                         <div ref={messagesEndRef} />
-                     </div>
+                        <div ref={messagesEndRef} />
+                    </div>
 
-                     <form onSubmit={handleSendMessage} style={chatStyles.inputContainer}>
+                    <form onSubmit={handleSendMessage} style={chatStyles.inputContainer}>
                         <input
                             type="text"
                             value={input}
@@ -304,9 +322,9 @@ const GlobalChat = () => {
                             Yap
                         </button>
                         {!isWsConnected && <span style={{ marginLeft: '10px', color: '#aaaaaa', fontSize: '0.8rem', alignSelf: 'center' }}>Connecting...</span>}
-                     </form>
+                    </form>
                 </div>
-             </div>
+            </div>
         </div>
     );
 };
