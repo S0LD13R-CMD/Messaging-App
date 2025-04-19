@@ -4,9 +4,10 @@ services:
       context: ./messaging.app
       dockerfile: Dockerfile.prod
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://abduls-pi:BloodhoundOctane123@chat-mongodb:27017/chatappauthSource=admin
+      SPRING_DATA_MONGODB_URI: mongodb://abduls-pi:BloodhoundOctane123@chat-mongodb:27017/chatapp?authSource=admin
     networks:
       - chatnet
+    restart: unless-stopped
 
   frontend-service:
     build: 
@@ -19,6 +20,7 @@ services:
       - chatnet
     depends_on:
       - backend-service
+    restart: unless-stopped
 
   mongodb:
     image: mongo:6.0
@@ -32,6 +34,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: BloodhoundOctane123
     networks:
       - chatnet
+    restart: unless-stopped
 
 volumes:
   mongo-data:
