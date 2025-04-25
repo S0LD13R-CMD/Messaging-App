@@ -4,6 +4,7 @@ import SockJS from 'sockjs-client';
 import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
 import createSockJS from '../api/websocket';
+import { fetchGlobalChatMessages } from '../api/globalMessages';
 
 const chatStyles = {
   containerStyle1: {
@@ -130,6 +131,9 @@ const GlobalChat = () => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const { username: senderId } = useAuth();
     const [sendHover, setSendHover] = useState(false);
+    const chatRef = useRef<HTMLDivElement>(null);
+    const [isAtBottom, setIsAtBottom] = useState(true);
+    const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 
     useEffect(() => {
         console.log('[GlobalChat] useEffect running. senderId:', senderId);
@@ -190,8 +194,60 @@ const GlobalChat = () => {
     }, [senderId]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (isAtBottom) {
+            chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
+        }
     }, [messages]);
+
+    useEffect(() => {
+        const fetchInitialMessages = async () => {
+            try {
+                const res = await fetchGlobalChatMessages();
+                setMessages(res.data);
+            } catch (err) {
+                console.error('GlobalChat failed to fetch initial messages', err);
+            }
+        };
+        fetchInitialMessages();
+    }, []);
+
+    const handleScroll = () => {
+        const container = chatRef.current;
+        if (!container) return;
+
+        const threshold = 50;
+        const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+        setIsAtBottom(distanceFromBottom < threshold);
+
+        if (container.scrollTop === 0 && !isLoadingOlder && messages.length > 0) {
+            loadOlderMessages();
+        }
+    };
+    
+    const loadOlderMessages = async () => {
+        const container = chatRef.current;
+        if (!container) return;
+
+        const prevScrollHeight = container.scrollHeight;
+        const oldestTimestamp = messages[0].timestamp;
+
+        setIsLoadingOlder(true);
+        try {
+            const res = await fetchGlobalChatMessages(oldestTimestamp);
+            setMessages(prev => {
+                const updated = [...res.data, ...prev];
+                requestAnimationFrame(() => {
+                    const newScrollHeight = container.scrollHeight;
+                    container.scrollTop = newScrollHeight - prevScrollHeight;
+                });
+                return updated;
+            });
+        } catch (err) {
+            console.error('GlobalChat failed to load older messages', err);
+        } finally {
+            setIsLoadingOlder(false);
+        }
+    };
 
     const formatTimestamp = (timestamp: string | number): string => {
         if (!timestamp) return '';
@@ -254,7 +310,9 @@ const GlobalChat = () => {
                     <div style={{
                         ...chatStyles.messagesArea,
                         overflowY: 'auto'
-                    }}>
+                    }}
+                    onScroll={handleScroll}
+                    ref={chatRef}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
                                 <div style={chatStyles.dateHeader}>{date}</div>

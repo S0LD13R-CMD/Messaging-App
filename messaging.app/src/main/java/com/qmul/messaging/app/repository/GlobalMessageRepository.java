@@ -1,6 +1,7 @@
 package com.qmul.messaging.app.repository;
 
 import com.qmul.messaging.app.model.GlobalMessage;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,4 +18,6 @@ public interface GlobalMessageRepository extends MongoRepository<GlobalMessage, 
     List<GlobalMessage> findByTimestamp(String timestamp);
 
     List<GlobalMessage> findBySenderIdAndTimestampBetween(String sender_id, String startTimestamp, String endTimestamp);
+
+    List<GlobalMessage> findByTimestampLessThanOrderByTimestampDesc(String timestamp, Pageable pageable);
 }
