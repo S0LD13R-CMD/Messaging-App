@@ -15,7 +15,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**") // Apply to all endpoints
-                        .allowedOrigins("https://chat.yappatron.org", "http://localhost:5173") // Allow frontend domain and local dev
+                        .allowedOrigins("https://chat.yappatron.org", "http://localhost:5173", "http://localhost:3000") // Allow frontend domain and local dev
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow credentials (cookies, authorization headers)
