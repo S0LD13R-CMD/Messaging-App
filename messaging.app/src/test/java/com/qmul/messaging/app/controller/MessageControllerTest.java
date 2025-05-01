@@ -114,4 +114,86 @@ class MessageControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @WithMockUser(username = "user1")
+    void deleteGlobalMessage_userOwnsMessage_messageDeleted() throws Exception {
+        GlobalMessage message = new GlobalMessage("test content", "user1", "1234567890");
+        globalMessageRepository.save(message);
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "user1");
+
+        mockMvc.perform(delete("/messages/global/" + message.getId())
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Message deleted"));
+    }
+
+    @Test
+    @WithMockUser(username = "user2")
+    void deleteGlobalMessage_userNotOwner_forbidden() throws Exception {
+        GlobalMessage message = new GlobalMessage("test content", "user1", "1234567890");
+        globalMessageRepository.save(message);
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "user2");
+
+        mockMvc.perform(delete("/messages/global/" + message.getId())
+                        .session(session))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("You can only delete your own messages"));
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    void deleteGlobalMessage_messageNotFound_notFound() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "user1");
+
+        mockMvc.perform(delete("/messages/global/doesnotexist")
+                        .session(session))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    void deletePrivateMessage_userOwnsMessage_messageDeleted() throws Exception {
+        PrivateMessage message = new PrivateMessage("test content", "user1", "user2", "user1-user2", "1234567890");
+        privateMessageRepository.save(message);
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "user1");
+
+        mockMvc.perform(delete("/messages/private/" + message.getId())
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Message deleted"));
+    }
+
+    @Test
+    @WithMockUser(username = "user2")
+    void deletePrivateMessage_userNotOwner_forbidden() throws Exception {
+        PrivateMessage message = new PrivateMessage("test content", "user1", "user2", "user1-user2", "1234567890");
+        privateMessageRepository.save(message);
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "user2");
+
+        mockMvc.perform(delete("/messages/private/" + message.getId())
+                        .session(session))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("You can only delete your own messages"));
+    }
+
+    @Test
+    @WithMockUser(username = "user1")
+    void deletePrivateMessage_messageNotFound_notFound() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "user1");
+
+        mockMvc.perform(delete("/messages/private/doesnotexist")
+                        .session(session))
+                .andExpect(status().isNotFound());
+    }
+
 }

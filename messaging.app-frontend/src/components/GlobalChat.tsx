@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
 import createSockJS from '../api/websocket';
 import { fetchGlobalChatMessages } from '../api/globalMessages';
+import { deleteGlobalMessage } from '../api/globalMessages';
 
 const chatStyles = {
   containerStyle1: {
@@ -162,6 +162,10 @@ const GlobalChat = () => {
                     const body = JSON.parse(message.body);
                     setMessages(prev => [...prev, body].sort((a, b) => Number(a.timestamp) - Number(b.timestamp)));
                 });
+                client.subscribe('/topic/global-deleted', (message: IMessage) => {
+                    const deletedId = message.body;
+                    setMessages(prev => prev.filter(msg => msg.id !== deletedId));
+                });
             },
             onDisconnect: () => {
                 console.log('[GlobalChat] WebSocket disconnected.');
@@ -197,7 +201,7 @@ const GlobalChat = () => {
         if (isAtBottom) {
             chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
         }
-    }, [messages]);
+    }, [messages, isAtBottom]);
 
     useEffect(() => {
         const fetchInitialMessages = async () => {
@@ -210,6 +214,15 @@ const GlobalChat = () => {
         };
         fetchInitialMessages();
     }, []);
+
+    const handleDeleteMessage = async (id: string) => {
+        if (!window.confirm('Delete this message?')) return;
+        try {
+            await deleteGlobalMessage(id);
+        } catch (err) {
+            console.error('GlobalChat failed to delete message', err);
+        }
+    };
 
     const handleScroll = () => {
         const container = chatRef.current;
@@ -349,7 +362,26 @@ const GlobalChat = () => {
                                             >
                                                 {msg.content}
                                             </div>
-                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}</div>
+                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}
+                                                {/* Place the delete button here */}
+                                                {isSender && msg.id && (
+                                                    <button
+                                                        style={{
+                                                            ...chatStyles.messageTime,
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            color: '#FF6666',
+                                                            fontSize: '0.6rem',
+                                                            fontFamily: 'inherit',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        title="Delete"
+                                                        onClick={() => handleDeleteMessage(msg.id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     );
                                 })}

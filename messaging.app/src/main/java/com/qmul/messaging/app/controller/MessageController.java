@@ -5,10 +5,12 @@ import com.qmul.messaging.app.model.PrivateMessage;
 import com.qmul.messaging.app.repository.GlobalMessageRepository;
 import com.qmul.messaging.app.repository.PrivateMessageRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,7 +24,11 @@ import java.util.stream.Stream;
 public class MessageController {
 
     private final GlobalMessageRepository globalMessageRepository;
+    
     private final PrivateMessageRepository privateMessageRepository;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public MessageController(GlobalMessageRepository globalMessageRepository, PrivateMessageRepository privateMessageRepository) {
         this.globalMessageRepository = globalMessageRepository;
@@ -100,4 +106,43 @@ public class MessageController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    @DeleteMapping("/global/{id}")
+    public ResponseEntity<?> deleteGlobalMessage(@PathVariable String id, HttpSession session) {
+        String currentUser = (String) session.getAttribute("username");
+        if (currentUser == null) return ResponseEntity.status(401).body("Not authenticated");
+
+        return globalMessageRepository.findById(id)
+                .map(msg -> {
+                    if (!currentUser.equals(msg.getSenderId())) {
+                        return ResponseEntity.status(403).body("You can only delete your own messages");
+                    }
+                    globalMessageRepository.deleteById(id);
+                    simpMessagingTemplate.convertAndSend("/topic/global-deleted", id);
+                    return ResponseEntity.ok("Message deleted");
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/private/{id}")
+    public ResponseEntity<?> deletePrivateMessage(@PathVariable String id, HttpSession session) {
+        String currentUser = (String) session.getAttribute("username");
+        if (currentUser == null) return ResponseEntity.status(401).body("Not authenticated");
+
+        return privateMessageRepository.findById(id)
+                .map(msg -> {
+                    if (!currentUser.equals(msg.getSenderId())) {
+                        return ResponseEntity.status(403).body("You can only delete your own messages");
+                    }
+                    privateMessageRepository.deleteById(id);
+                    String roomId = msg.getPrivateChatroomId();
+                    String user1 = msg.getSenderId();
+                    String user2 = msg.getReceiverId();
+                    simpMessagingTemplate.convertAndSendToUser(user1, "/queue/private-deleted", id);
+                    simpMessagingTemplate.convertAndSendToUser(user2, "/queue/private-deleted", id);
+                    return ResponseEntity.ok("Message deleted");
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }
