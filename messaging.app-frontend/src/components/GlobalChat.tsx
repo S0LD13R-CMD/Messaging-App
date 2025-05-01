@@ -5,6 +5,7 @@ import Header from './Header';
 import createSockJS from '../api/websocket';
 import { fetchGlobalChatMessages } from '../api/globalMessages';
 import { deleteGlobalMessage } from '../api/globalMessages';
+import ConfirmationModal from './ConfirmationModal';
 
 const chatStyles = {
   containerStyle1: {
@@ -135,6 +136,9 @@ const GlobalChat = () => {
     const [isAtBottom, setIsAtBottom] = useState(true);
     const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [messageToDeleteId, setMessageToDeleteId] = useState<string | null>(null);
+
     useEffect(() => {
         console.log('[GlobalChat] useEffect running. senderId:', senderId);
         if (!senderId) {
@@ -147,8 +151,6 @@ const GlobalChat = () => {
             }
             return;
         }
-
-        setMessages([{ id: 'system-welcome', content: 'Welcome to the global chat!', senderId: 'System', timestamp: Date.now().toString() }]);
 
         console.log('[GlobalChat] senderId found, attempting to connect WebSocket.');
         const socket = createSockJS();
@@ -199,28 +201,53 @@ const GlobalChat = () => {
 
     useEffect(() => {
         if (isAtBottom) {
-            chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
+            requestAnimationFrame(() => {
+                chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
+            });
+        } else {
+            const container = chatRef.current;
+            if (container) {
+                const scrollHeightBeforeUpdate = container.scrollHeight;
+                requestAnimationFrame(() => {
+                    container.scrollTop += (container.scrollHeight - scrollHeightBeforeUpdate);
+                });
+            }
         }
     }, [messages, isAtBottom]);
 
     useEffect(() => {
         const fetchInitialMessages = async () => {
+            setIsLoadingOlder(true);
             try {
                 const res = await fetchGlobalChatMessages();
-                setMessages(res.data);
+                setMessages(res.data.sort((a: any, b: any) => Number(a.timestamp) - Number(b.timestamp)));
+                requestAnimationFrame(() => {
+                    chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight });
+                    setIsAtBottom(true);
+                });
             } catch (err) {
                 console.error('GlobalChat failed to fetch initial messages', err);
+            } finally {
+                setIsLoadingOlder(false);
             }
         };
         fetchInitialMessages();
     }, []);
 
-    const handleDeleteMessage = async (id: string) => {
-        if (!window.confirm('Delete this message?')) return;
+    const handleDeleteMessage = (id: string) => {
+        setMessageToDeleteId(id);
+        setIsModalOpen(true);
+    };
+
+    const confirmDeleteMessage = async () => {
+        if (!messageToDeleteId) return;
         try {
-            await deleteGlobalMessage(id);
+            await deleteGlobalMessage(messageToDeleteId);
         } catch (err) {
             console.error('GlobalChat failed to delete message', err);
+        } finally {
+            setIsModalOpen(false);
+            setMessageToDeleteId(null);
         }
     };
 
@@ -326,6 +353,7 @@ const GlobalChat = () => {
                     }}
                     onScroll={handleScroll}
                     ref={chatRef}>
+                        {isLoadingOlder && <div style={{textAlign: 'center', padding: '10px', color: '#aaaaaa'}}>Loading older messages...</div>}
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
                                 <div style={chatStyles.dateHeader}>{date}</div>
@@ -362,8 +390,8 @@ const GlobalChat = () => {
                                             >
                                                 {msg.content}
                                             </div>
-                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}
-                                                {/* Place the delete button here */}
+                                            <div style={chatStyles.messageTime}>
+                                                {formatTimestamp(msg.timestamp)}
                                                 {isSender && msg.id && (
                                                     <button
                                                         style={{
@@ -371,14 +399,17 @@ const GlobalChat = () => {
                                                             background: 'none',
                                                             border: 'none',
                                                             color: '#FF6666',
-                                                            fontSize: '0.6rem',
+                                                            fontSize: '0.7rem',
                                                             fontFamily: 'inherit',
-                                                            cursor: 'pointer'
+                                                            cursor: 'pointer',
+                                                            marginLeft: '8px',
+                                                            padding: '0',
+                                                            verticalAlign: 'middle'
                                                         }}
                                                         title="Delete"
                                                         onClick={() => handleDeleteMessage(msg.id)}
                                                     >
-                                                        Delete
+                                                        🗑️
                                                     </button>
                                                 )}
                                             </div>
@@ -415,6 +446,14 @@ const GlobalChat = () => {
                     </form>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={confirmDeleteMessage}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this message? This action cannot be undone."
+            />
         </div>
     );
 };
