@@ -113,7 +113,6 @@ public class AuthenticationController {
         return ResponseEntity.ok("Logout successful");
     }
 
-    //to be removed for production use, only for testing authentication
     @GetMapping("/session")
     public ResponseEntity<?> checkSession(HttpSession session) {
         Object username = session.getAttribute("username");

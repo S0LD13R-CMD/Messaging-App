@@ -36,6 +36,9 @@ public class MessageController {
 
     @PostMapping("/global")
     public ResponseEntity<GlobalMessage> createMessage(@RequestBody GlobalMessage message) {
+        if (message.getContent() == null || message.getContent().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         try {
             GlobalMessage savedMessage = globalMessageRepository.save(message);
             return ResponseEntity.ok(savedMessage);
@@ -51,6 +54,9 @@ public class MessageController {
 
     @PostMapping("/private")
     public ResponseEntity<PrivateMessage> createForumMessage(@RequestBody PrivateMessage message) {
+        if (message.getContent() == null || message.getContent().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         try {
             PrivateMessage savedMessage = privateMessageRepository.save(message);
             return ResponseEntity.ok(savedMessage);
