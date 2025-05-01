@@ -204,16 +204,8 @@ const GlobalChat = () => {
             requestAnimationFrame(() => {
                 chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
             });
-        } else {
-            const container = chatRef.current;
-            if (container) {
-                const scrollHeightBeforeUpdate = container.scrollHeight;
-                requestAnimationFrame(() => {
-                    container.scrollTop += (container.scrollHeight - scrollHeightBeforeUpdate);
-                });
-            }
         }
-    }, [messages, isAtBottom]);
+    }, [isAtBottom, messages]);
 
     useEffect(() => {
         const fetchInitialMessages = async () => {
@@ -255,7 +247,7 @@ const GlobalChat = () => {
         const container = chatRef.current;
         if (!container) return;
 
-        const threshold = 50;
+        const threshold = 1200;
         const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
         setIsAtBottom(distanceFromBottom < threshold);
 
