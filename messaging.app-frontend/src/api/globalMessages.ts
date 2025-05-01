@@ -7,3 +7,7 @@ export const fetchGlobalChatMessages = (before?: string, limit: number = 100) =>
     }
     return api.get(url);
 };
+
+export const deleteGlobalMessage = (id: string) => {
+    return api.delete(`/messages/global/${id}`);
+};

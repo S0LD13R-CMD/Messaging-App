@@ -20,7 +20,7 @@ public class WebSocketGlobalChatController {
 
     @MessageMapping("/global")
     public void handleGlobalMessage(GlobalMessage message, Principal principal) {
-        message.setSenderId(principal.getName());
+        message.setSenderId(principal != null ? principal.getName() : null);
         message.setTimestamp(String.valueOf(System.currentTimeMillis()));
         globalMessageRepository.save(message);
         messagingTemplate.convertAndSend("/topic/global", message);

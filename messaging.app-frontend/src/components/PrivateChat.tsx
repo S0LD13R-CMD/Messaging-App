@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Client, IMessage } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import api from '../api/auth';
 import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
 import createSockJS from '../api/websocket';
+import { deletePrivateMessage } from '../api/privateMessages';
 
 const chatStyles = {
   containerStyle2: {
@@ -202,6 +202,10 @@ const PrivateChat = () => {
                              setMessages(prev => [...prev, body].sort((a, b) => Number(a.timestamp) - Number(b.timestamp)));
                         }
                     });
+                    client.subscribe('/user/queue/private-deleted', (message: IMessage) => {
+                        const deletedId = message.body;
+                        setMessages(prev => prev.filter(msg => msg.id !== deletedId));
+                    });
                 },
                 onDisconnect: () => {
                     console.log('[PrivateChat] WebSocket disconnected.');
@@ -239,6 +243,15 @@ const PrivateChat = () => {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+    const handleDeleteMessage = async (id: string) => {
+        if (!window.confirm('Delete this message?')) return;
+        try {
+            await deletePrivateMessage(id);
+        } catch (err) {
+            console.error('PrivateChat failed to delete message: ', err);
+        }
+    };
 
     const formatTimestamp = (timestamp: string | number): string => {
         if (!timestamp) return '';
@@ -347,7 +360,25 @@ const PrivateChat = () => {
                                             >
                                                 {msg.content}
                                             </div>
-                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}</div>
+                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}
+                                                {isSender && msg.id && (
+                                                <button
+                                                    style={{
+                                                        ...chatStyles.messageTime,
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: '#FF6666',
+                                                        fontSize: '0.6rem',
+                                                        fontFamily: 'inherit',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                    title="Delete"
+                                                    onClick={() => handleDeleteMessage(msg.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                                )}
+                                            </div>
                                         </div>
                                     );
                                 })}

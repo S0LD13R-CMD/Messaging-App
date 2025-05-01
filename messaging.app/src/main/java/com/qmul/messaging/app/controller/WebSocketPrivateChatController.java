@@ -20,12 +20,14 @@ public class WebSocketPrivateChatController {
 
     @MessageMapping("/private")
     public void handlePrivateMessage(PrivateMessage message, Principal principal) {
-        String sender = principal.getName();
+        String sender = principal != null ? principal.getName() : null;
         message.setSenderId(sender);
         message.setTimestamp(String.valueOf(System.currentTimeMillis()));
         privateMessageRepository.save(message);
 
         messagingTemplate.convertAndSendToUser(sender, "/queue/private", message);
-        messagingTemplate.convertAndSendToUser(message.getReceiverId(), "/queue/private", message);
+        if (message.getReceiverId() != null) {
+            messagingTemplate.convertAndSendToUser(message.getReceiverId(), "/queue/private", message);
+        }
     }
 }
