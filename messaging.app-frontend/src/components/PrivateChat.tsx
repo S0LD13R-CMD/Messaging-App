@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import Header from './Header';
 import createSockJS from '../api/websocket';
 import { deletePrivateMessage } from '../api/privateMessages';
+import ConfirmationModal from './ConfirmationModal';
 
 const chatStyles = {
   containerStyle2: {
@@ -153,9 +154,12 @@ const PrivateChat = () => {
     const [input, setInput] = useState('');
     const clientRef = useRef<Client | null>(null);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const chatRef = useRef<HTMLDivElement | null>(null);
     const [isBackHover, setIsBackHover] = useState(false);
     const [isWsConnected, setIsWsConnected] = useState(false);
     const [sendHover, setSendHover] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [messageToDeleteId, setMessageToDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
         console.log('[PrivateChat] useEffect running. senderId:', senderId, 'receiverId:', receiverId);
@@ -182,7 +186,10 @@ const PrivateChat = () => {
                         (msg.senderId === receiverId && msg.receiverId === senderId)
                 ).sort((a: any, b: any) => Number(a.timestamp) - Number(b.timestamp));
                 setMessages(filtered);
-                console.log('[PrivateChat] Private messages loaded:', filtered.length);
+                console.log('[PrivateChat] Private messages loaded, filtered, and sorted:', filtered.length);
+                requestAnimationFrame(() => {
+                    chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight });
+                });
             } catch (err) {
                 console.error("[PrivateChat] Failed to load private messages", err);
             }
@@ -195,15 +202,16 @@ const PrivateChat = () => {
                 onConnect: () => {
                     console.log('[PrivateChat] WebSocket connected.');
                     setIsWsConnected(true);
-                    client.subscribe('/user/queue/private', (message: IMessage) => {
+                    client.subscribe(`/user/queue/private`, (message: IMessage) => {
                         const body = JSON.parse(message.body);
                         console.log('[PrivateChat] Received message:', body);
                         if ((body.senderId === senderId && body.receiverId === receiverId) || (body.senderId === receiverId && body.receiverId === senderId)) {
-                             setMessages(prev => [...prev, body].sort((a, b) => Number(a.timestamp) - Number(b.timestamp)));
+                            setMessages(prev => [...prev, body].sort((a, b) => Number(a.timestamp) - Number(b.timestamp)));
                         }
                     });
-                    client.subscribe('/user/queue/private-deleted', (message: IMessage) => {
+                    client.subscribe(`/user/queue/private-deleted`, (message: IMessage) => {
                         const deletedId = message.body;
+                        console.log('[PrivateChat] Received delete confirmation for ID:', deletedId);
                         setMessages(prev => prev.filter(msg => msg.id !== deletedId));
                     });
                 },
@@ -241,15 +249,25 @@ const PrivateChat = () => {
     }, [receiverId, senderId]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        requestAnimationFrame(() => {
+           chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
+        });
     }, [messages]);
 
-    const handleDeleteMessage = async (id: string) => {
-        if (!window.confirm('Delete this message?')) return;
+    const handleDeleteMessage = (id: string) => {
+        setMessageToDeleteId(id);
+        setIsModalOpen(true);
+    };
+
+    const confirmDeleteMessage = async () => {
+        if (!messageToDeleteId) return;
         try {
-            await deletePrivateMessage(id);
+            await deletePrivateMessage(messageToDeleteId);
         } catch (err) {
             console.error('PrivateChat failed to delete message: ', err);
+        } finally {
+            setIsModalOpen(false);
+            setMessageToDeleteId(null);
         }
     };
 
@@ -338,7 +356,8 @@ const PrivateChat = () => {
                      <div style={{
                          ...chatStyles.messagesArea,
                          overflowY: 'auto'
-                     }}>
+                     }}
+                     ref={chatRef}>
                         {Object.entries(groupedMessages).map(([date, msgsInDate]: [string, any[]]) => (
                             <React.Fragment key={date}>
                                 <div style={chatStyles.dateHeader}>{date}</div>
@@ -360,7 +379,8 @@ const PrivateChat = () => {
                                             >
                                                 {msg.content}
                                             </div>
-                                            <div style={chatStyles.messageTime}>{formatTimestamp(msg.timestamp)}
+                                            <div style={chatStyles.messageTime}>
+                                                {formatTimestamp(msg.timestamp)}
                                                 {isSender && msg.id && (
                                                 <button
                                                     style={{
@@ -368,14 +388,17 @@ const PrivateChat = () => {
                                                         background: 'none',
                                                         border: 'none',
                                                         color: '#FF6666',
-                                                        fontSize: '0.6rem',
+                                                        fontSize: '0.7rem',
                                                         fontFamily: 'inherit',
-                                                        cursor: 'pointer'
+                                                        cursor: 'pointer',
+                                                        marginLeft: '8px',
+                                                        padding: '0',
+                                                        verticalAlign: 'middle'
                                                     }}
                                                     title="Delete"
                                                     onClick={() => handleDeleteMessage(msg.id)}
                                                 >
-                                                    Delete
+                                                    🗑️
                                                 </button>
                                                 )}
                                             </div>
@@ -412,6 +435,14 @@ const PrivateChat = () => {
                      </form>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={confirmDeleteMessage}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this message? This action cannot be undone."
+            />
         </div>
     );
 };

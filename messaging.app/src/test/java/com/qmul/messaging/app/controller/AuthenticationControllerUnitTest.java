@@ -39,6 +39,7 @@ class AuthenticationControllerUnitTest {
         return map;
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void register_blankUsernameOrPassword_returnsBadRequest() {
         ResponseEntity<?> resp = authenticationController.register(credentials("", "pass"));
@@ -48,6 +49,7 @@ class AuthenticationControllerUnitTest {
         assertEquals(400, resp.getStatusCodeValue());
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void register_usernameTooShort_returnsBadRequest() {
         ResponseEntity<?> resp = authenticationController.register(credentials("ab", "Test@1234"));
@@ -55,6 +57,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("Invalid username"));
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void register_usernameTooLong_returnsBadRequest() {
         ResponseEntity<?> resp = authenticationController.register(credentials("awoehfbiueguergiuerguergher9ugher98gher9ghergegegegerge", "Test@1234"));
@@ -62,6 +65,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("Invalid username"));
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void register_invalidUsernameCharacters_returnsBadRequest() {
         ResponseEntity<?> resp = authenticationController.register(credentials("user@name", "Test@1234"));
@@ -69,6 +73,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("Invalid username"));
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void register_passwordTooShort_returnsBadRequest() {
         ResponseEntity<?> resp = authenticationController.register(credentials("validuser", "short"));
@@ -76,6 +81,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("Invalid password"));
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void register_passwordTooLong_returnsBadRequest() {
         ResponseEntity<?> resp = authenticationController.register(credentials("validuser", "ihf9shf9eh9heg9e8hge9ghergher8ghe9ge8gehge98hger98ghe9g8erhg9e8hg9er8hg9e8rhg9erg9e8rhg9er8gher8gh98erhg98ehrg98ergr"));
@@ -83,6 +89,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("Invalid password"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void register_duplicateUsername_returnsBadRequest() {
         when(usersRepository.existsByUsernameIgnoreCase("existinguser")).thenReturn(true);
@@ -90,6 +97,7 @@ class AuthenticationControllerUnitTest {
         assertEquals(400, resp.getStatusCodeValue());
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void register_validInput_returnsOk() {
         when(usersRepository.existsByUsernameIgnoreCase("newuser")).thenReturn(false);
@@ -99,6 +107,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("User registered successfully"));
     }
 
+    @SuppressWarnings({ "deprecation", "null" })
     @Test
     public void getAllUsers_withSession_returnsUserList() {
         when(session.getAttribute("username")).thenReturn("currentUser");
@@ -110,6 +119,7 @@ class AuthenticationControllerUnitTest {
         assertTrue(resp.getBody().toString().contains("user1"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void logout_validSession_returnsOk() {
         ResponseEntity<?> resp = authenticationController.logout(session);

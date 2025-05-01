@@ -135,7 +135,6 @@ public class MessageController {
                         return ResponseEntity.status(403).body("You can only delete your own messages");
                     }
                     privateMessageRepository.deleteById(id);
-                    String roomId = msg.getPrivateChatroomId();
                     String user1 = msg.getSenderId();
                     String user2 = msg.getReceiverId();
                     simpMessagingTemplate.convertAndSendToUser(user1, "/queue/private-deleted", id);

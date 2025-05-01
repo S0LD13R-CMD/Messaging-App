@@ -55,6 +55,7 @@ class WebSocketPrivateChatControllerUnitTest {
         assertNotNull(message.getTimestamp());
     }
 
+    @SuppressWarnings("null")
     @Test
     void handlePrivateMessage_withNullPrincipal_setsSenderToNull() {
         PrivateMessage message = new PrivateMessage();

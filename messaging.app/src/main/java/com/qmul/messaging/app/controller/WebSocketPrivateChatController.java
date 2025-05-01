@@ -18,6 +18,7 @@ public class WebSocketPrivateChatController {
     @Autowired
     private PrivateMessageRepository privateMessageRepository;
 
+    @SuppressWarnings("null")
     @MessageMapping("/private")
     public void handlePrivateMessage(PrivateMessage message, Principal principal) {
         String sender = principal != null ? principal.getName() : null;
