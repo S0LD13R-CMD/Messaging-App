@@ -22,7 +22,7 @@ class CustomUserDetailsServiceTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @Test
-    void loadUserByUsername_userExists_returnsUserDetails() {
+    public void loadUserByUsername_userExists_returnsUserDetails() {
         Users user = new Users();
         user.setUsername("testUser");
         user.setPasswordHash("testPasswordHash");
@@ -37,7 +37,7 @@ class CustomUserDetailsServiceTest {
     }
 
     @Test
-    void loadUserByUsername_userDoesNotExist_throwsUsernameNotFoundException() {
+    public void loadUserByUsername_userDoesNotExist_throwsUsernameNotFoundException() {
         when(usersRepository.findByUsernameIgnoreCase("testUser")).thenReturn(null);
 
         assertThrows(UsernameNotFoundException.class, () -> {

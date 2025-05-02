@@ -109,14 +109,14 @@ class MessageControllerTest {
 
     @Test
     @WithMockUser(username = "user1")
-    void getPrivateChatWithUser_noSession_returnsUnauthorized() throws Exception {
+    public void getPrivateChatWithUser_noSession_returnsUnauthorized() throws Exception {
         mockMvc.perform(get("/messages/private-chat/user2"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(username = "user1")
-    void deleteGlobalMessage_userOwnsMessage_messageDeleted() throws Exception {
+    public void deleteGlobalMessage_userOwnsMessage_messageDeleted() throws Exception {
         GlobalMessage message = new GlobalMessage("test content", "user1", "1234567890");
         globalMessageRepository.save(message);
 
@@ -131,7 +131,7 @@ class MessageControllerTest {
 
     @Test
     @WithMockUser(username = "user2")
-    void deleteGlobalMessage_userNotOwner_forbidden() throws Exception {
+    public void deleteGlobalMessage_userNotOwner_forbidden() throws Exception {
         GlobalMessage message = new GlobalMessage("test content", "user1", "1234567890");
         globalMessageRepository.save(message);
 
@@ -146,7 +146,7 @@ class MessageControllerTest {
 
     @Test
     @WithMockUser(username = "user1")
-    void deleteGlobalMessage_messageNotFound_notFound() throws Exception {
+    public void deleteGlobalMessage_messageNotFound_notFound() throws Exception {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("username", "user1");
 
@@ -157,7 +157,7 @@ class MessageControllerTest {
 
     @Test
     @WithMockUser(username = "user1")
-    void deletePrivateMessage_userOwnsMessage_messageDeleted() throws Exception {
+    public void deletePrivateMessage_userOwnsMessage_messageDeleted() throws Exception {
         PrivateMessage message = new PrivateMessage("test content", "user1", "user2", "user1-user2", "1234567890");
         privateMessageRepository.save(message);
 
@@ -172,7 +172,7 @@ class MessageControllerTest {
 
     @Test
     @WithMockUser(username = "user2")
-    void deletePrivateMessage_userNotOwner_forbidden() throws Exception {
+    public void deletePrivateMessage_userNotOwner_forbidden() throws Exception {
         PrivateMessage message = new PrivateMessage("test content", "user1", "user2", "user1-user2", "1234567890");
         privateMessageRepository.save(message);
 
@@ -187,7 +187,7 @@ class MessageControllerTest {
 
     @Test
     @WithMockUser(username = "user1")
-    void deletePrivateMessage_messageNotFound_notFound() throws Exception {
+    public void deletePrivateMessage_messageNotFound_notFound() throws Exception {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("username", "user1");
 

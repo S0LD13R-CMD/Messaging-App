@@ -26,7 +26,7 @@ class WebSocketPrivateChatControllerUnitTest {
     private WebSocketPrivateChatController webSocketPrivateChatController;
 
     @Test
-    void handlePrivateMessage_withValidPrincipal_andReceiver_sendsToBothUsers() {
+    public void handlePrivateMessage_withValidPrincipal_andReceiver_sendsToBothUsers() {
         PrivateMessage message = new PrivateMessage();
         message.setReceiverId("testUser1");
         Principal principal = () -> "testUser2";
@@ -42,7 +42,7 @@ class WebSocketPrivateChatControllerUnitTest {
     }
 
     @Test
-    void handlePrivateMessage_withValidPrincipal_butNoReceiver_sendsOnlyToSender() {
+    public void handlePrivateMessage_withValidPrincipal_butNoReceiver_sendsOnlyToSender() {
         PrivateMessage message = new PrivateMessage();
         Principal principal = () -> "testUser";
 
@@ -55,9 +55,8 @@ class WebSocketPrivateChatControllerUnitTest {
         assertNotNull(message.getTimestamp());
     }
 
-    @SuppressWarnings("null")
     @Test
-    void handlePrivateMessage_withNullPrincipal_setsSenderToNull() {
+    public void handlePrivateMessage_withNullPrincipal_setsSenderToNull() {
         PrivateMessage message = new PrivateMessage();
 
         webSocketPrivateChatController.handlePrivateMessage(message, null);

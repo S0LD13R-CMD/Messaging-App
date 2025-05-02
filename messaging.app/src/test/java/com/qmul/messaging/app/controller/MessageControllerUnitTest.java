@@ -31,9 +31,8 @@ class MessageControllerUnitTest {
     @InjectMocks
     private MessageController messageController;
 
-    @SuppressWarnings({ "deprecation", "null" })
     @Test
-    void retrieveGlobalMessages_noBeforeParam_returnsAllMessages() {
+    public void retrieveGlobalMessages_noBeforeParam_returnsAllMessages() {
         List<GlobalMessage> messages = List.of(new GlobalMessage("content", "user", "1"));
         Page<GlobalMessage> page = new PageImpl<>(messages);
         when(globalMessageRepository.findAll(any(Pageable.class))).thenReturn(page);
@@ -43,9 +42,8 @@ class MessageControllerUnitTest {
         assertEquals(1, resp.getBody().size());
     }
 
-    @SuppressWarnings({ "deprecation", "null" })
     @Test
-    void retrieveGlobalMessages_withBeforeParam_returnsFilteredMessages() {
+    public void retrieveGlobalMessages_withBeforeParam_returnsFilteredMessages() {
         List<GlobalMessage> messages = List.of(new GlobalMessage("content", "user", "1"));
         when(globalMessageRepository.findByTimestampLessThanOrderByTimestampDesc(eq("2"), any(Pageable.class))).thenReturn(messages);
 
@@ -54,25 +52,22 @@ class MessageControllerUnitTest {
         assertEquals(1, resp.getBody().size());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    void retrieveGlobalMessages_repositoryThrowsException_returns500() {
+    public void retrieveGlobalMessages_repositoryThrowsException_returns500() {
         when(globalMessageRepository.findAll(any(Pageable.class))).thenThrow(new RuntimeException("fail"));
         ResponseEntity<List<GlobalMessage>> resp = messageController.retrieveGlobalMessages(null, 100);
         assertEquals(500, resp.getStatusCodeValue());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
-    void getPrivateChatWithUser_noSession_returns401() {
+    public void getPrivateChatWithUser_noSession_returns401() {
         when(httpSession.getAttribute("username")).thenReturn(null);
         ResponseEntity<List<PrivateMessage>> resp = messageController.getPrivateChatWithUser("other", httpSession);
         assertEquals(401, resp.getStatusCodeValue());
     }
 
-    @SuppressWarnings({ "deprecation", "null" })
     @Test
-    void getPrivateChatWithUser_validSession_returnsMessages() {
+    public void getPrivateChatWithUser_validSession_returnsMessages() {
         when(httpSession.getAttribute("username")).thenReturn("user1");
         List<PrivateMessage> messages = List.of(new PrivateMessage("hi", "user1", "other", "room", "1"));
         when(privateMessageRepository.findByPrivateChatroomIdOrderByTimestampAsc(anyString())).thenReturn(messages);
@@ -82,9 +77,8 @@ class MessageControllerUnitTest {
         assertEquals(1, resp.getBody().size());
     }
 
-    @SuppressWarnings({ "deprecation", "null" })
     @Test
-    void getPrivateChatWithUser_emptyUsername_returnsEmptyList() {
+    public void getPrivateChatWithUser_emptyUsername_returnsEmptyList() {
         when(httpSession.getAttribute("username")).thenReturn("user1");
         ResponseEntity<List<PrivateMessage>> resp = messageController.getPrivateChatWithUser("", httpSession);
         assertEquals(200, resp.getStatusCodeValue());
