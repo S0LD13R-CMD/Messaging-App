@@ -33,35 +33,35 @@ class GlobalMessageRepositoryTest {
     }
 
     @Test
-    void testFindBySenderId() {
+    public void testFindBySenderId() {
         List<GlobalMessage> messages = globalMessageRepository.findBySenderId("user123");
         assertThat(messages).hasSize(1);
         assertThat(messages.get(0).getContent()).isEqualTo("Hello World");
     }
 
     @Test
-    void testFindByContentContaining() {
+    public void testFindByContentContaining() {
         List<GlobalMessage> messages = globalMessageRepository.findByContentContaining("Hello");
         assertThat(messages).hasSize(1);
         assertThat(messages.get(0).getSenderId()).isEqualTo("user123");
     }
 
     @Test
-    void testFindByTimestamp() {
+    public void testFindByTimestamp() {
         List<GlobalMessage> messages = globalMessageRepository.findByTimestamp("2025-03-07T10:00:00Z");
         assertThat(messages).hasSize(1);
         assertThat(messages.get(0).getContent()).isEqualTo("Hello World");
     }
 
     @Test
-    void testFindBySenderIdAndTimestampBetween() {
+    public void testFindBySenderIdAndTimestampBetween() {
         List<GlobalMessage> messages = globalMessageRepository.findBySenderIdAndTimestampBetween("user123", "2025-03-07T09:00:00Z", "2025-03-07T11:00:00Z");
         assertThat(messages).hasSize(1);
         assertThat(messages.get(0).getContent()).isEqualTo("Hello World");
     }
 
     @Test
-    void testFindByTimestampLessThanOrderByTimestampDesc() {
+    public void testFindByTimestampLessThanOrderByTimestampDesc() {
         Pageable pageable = PageRequest.of(0, 10);
         List<GlobalMessage> messages = globalMessageRepository
                 .findByTimestampLessThanOrderByTimestampDesc("2025-03-07T11:30:00Z", pageable);
@@ -72,7 +72,7 @@ class GlobalMessageRepositoryTest {
     }
 
     @Test
-    void testFindAll() {
+    public void testFindAll() {
         List<GlobalMessage> messages = globalMessageRepository.findAll();
         assertThat(messages).hasSize(2);
     }

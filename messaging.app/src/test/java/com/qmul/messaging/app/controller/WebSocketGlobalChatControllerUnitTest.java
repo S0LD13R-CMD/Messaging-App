@@ -27,7 +27,7 @@ class WebSocketGlobalChatControllerUnitTest {
     private WebSocketGlobalChatController controller;
 
     @Test
-    void handleGlobalMessage_withPrincipal_setsSenderAndSavesAndBroadcasts() {
+    public void handleGlobalMessage_withPrincipal_setsSenderAndSavesAndBroadcasts() {
         GlobalMessage message = new GlobalMessage();
         Principal principal = () -> "testUser";
 
@@ -41,7 +41,7 @@ class WebSocketGlobalChatControllerUnitTest {
     }
 
     @Test
-    void handleGlobalMessage_withoutPrincipal_setsNullSenderAndSavesAndBroadcasts() {
+    public void handleGlobalMessage_withoutPrincipal_setsNullSenderAndSavesAndBroadcasts() {
         GlobalMessage message = new GlobalMessage();
 
         controller.handleGlobalMessage(message, null);
