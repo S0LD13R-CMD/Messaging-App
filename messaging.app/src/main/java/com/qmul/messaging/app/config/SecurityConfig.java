@@ -50,7 +50,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/authentication/**") // Optionally exclude specific endpoints
+                )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
                 )
